@@ -1,0 +1,13 @@
+{
+    "experimentalTernaries": true,
+    "overrides": [
+        {
+            "files": [
+                "*.css"
+            ],
+            "options": {
+                "printWidth": 120
+            }
+        }
+    ]
+}

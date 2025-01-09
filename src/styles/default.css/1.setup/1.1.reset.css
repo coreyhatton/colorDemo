@@ -1,0 +1,60 @@
+/* Minimal css reset */
+@layer setup.reset {
+  /* Set box sizing model to be more intuitive.  */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: unset;
+  }
+
+  /* Anchor decoration is unwanted in nav. */
+  nav a {
+    text-decoration: none;
+  }
+
+  /* Reset default appearance for form inputs. */
+  /* textarea,
+  select,
+  input,
+  progress {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  } */
+
+  /* Remove built-in form typography styles. */
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  /* Prepare svg to be manipulated */
+  use,
+  svg,
+  path {
+    fill: inherit;
+  }
+
+  /* Improve default media behaviour. */
+  img,
+  picture,
+  video,
+  svg,
+  canvas {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* Ensure script elements are not displayed in content. */
+  link,
+  script {
+    display: none;
+  }
+}

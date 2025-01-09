@@ -1,0 +1,99 @@
+@layer tokens.colors {
+  /*********************************************************************************************
+  * || 1. COLOR SCHEME AND PALETTE ||
+  *********************************************************************************************/
+  :root,
+  ::backdrop {
+    /* | USER CUSTOMIZATION | *****************/
+    /* The user-submitted colors used to create our color scheme. */
+    /* Uncomment and add your brand colors here where relevant. */
+
+    --color-base: #ffffff; /* REQUIRED */
+    --color-contrast: #121212 /* REQUIRED */;
+
+    --userColor-primary: teal /* REQUIRED */;
+    /* --userColor-secondary: xxx; */
+    /* --userColor-tertiary: xxx; */
+    /* --userColor-accent: xxx; */
+
+    /* | MAIN COLOR TOKENS | *******************/
+    /* Non-primary colors use user values if present,
+    *  otherwise they are derived from the primary color using
+    *  adjacent hue rotations and a complimentary accent. */
+
+    --color-primary: var(--userColor-primary);
+    --color-secondary: var(--userColor-secondary, oklch(from var(--color-primary) l c calc(h + 45)));
+    --color-tertiary: var(--userColor-tertiary, oklch(from var(--color-primary) l c calc(h - 45)));
+    --color-accent: var(--userColor-accent, oklch(from var(--color-primary) l c calc(h + 180)));
+
+    /* | MAIN COLOR SHADES | *******************/
+    --lighten-calc: calc((1 - l) / 4);
+    --darken-calc: calc(l / 4);
+
+    --primary-l1: oklch(from var(--color-primary) calc(l + var(--lighten-calc)) c h);
+    --primary-l2: oklch(from var(--color-primary) calc(l + 2 * var(--lighten-calc)) c h);
+    --primary-l3: oklch(from var(--color-primary) calc(l + 3 * var(--lighten-calc)) c h);
+    --primary-d1: oklch(from var(--color-primary) calc(l - var(--darken-calc)) c h);
+    --primary-d2: oklch(from var(--color-primary) calc(l - 2 * var(--darken-calc)) c h);
+    --primary-d3: oklch(from var(--color-primary) calc(l - 3 * var(--darken-calc)) c h);
+
+    --secondary-l1: oklch(from var(--color-secondary) calc(l + var(--lighten-calc)) c h);
+    --secondary-l2: oklch(from var(--color-secondary) calc(l + 2 * var(--lighten-calc)) c h);
+    --secondary-l3: oklch(from var(--color-secondary) calc(l + 3 * var(--lighten-calc)) c h);
+    --secondary-d1: oklch(from var(--color-secondary) calc(l - var(--darken-calc)) c h);
+    --secondary-d2: oklch(from var(--color-secondary) calc(l - 2 * var(--darken-calc)) c h);
+    --secondary-d3: oklch(from var(--color-secondary) calc(l - 3 * var(--darken-calc)) c h);
+
+    --tertiary-l1: oklch(from var(--color-tertiary) calc(l + var(--lighten-calc)) c h);
+    --tertiary-l2: oklch(from var(--color-tertiary) calc(l + 2 * var(--lighten-calc)) c h);
+    --tertiary-l3: oklch(from var(--color-tertiary) calc(l + 3 * var(--lighten-calc)) c h);
+    --tertiary-d1: oklch(from var(--color-tertiary) calc(l - var(--darken-calc)) c h);
+    --tertiary-d2: oklch(from var(--color-tertiary) calc(l - 2 * var(--darken-calc)) c h);
+    --tertiary-d3: oklch(from var(--color-tertiary) calc(l - 3 * var(--darken-calc)) c h);
+
+    --accent-l1: oklch(from var(--color-accent) calc(l + var(--lighten-calc)) c h);
+    --accent-l2: oklch(from var(--color-accent) calc(l + 2 * var(--lighten-calc)) c h);
+    --accent-l3: oklch(from var(--color-accent) calc(l + 3 * var(--lighten-calc)) c h);
+    --accent-d1: oklch(from var(--color-accent) calc(l - var(--darken-calc)) c h);
+    --accent-d2: oklch(from var(--color-accent) calc(l - 2 * var(--darken-calc)) c h);
+    --accent-d3: oklch(from var(--color-accent) calc(l - 3 * var(--darken-calc)) c h);
+  }
+
+  :root,
+  ::backdrop {
+    --text-base: var(--color-contrast);
+    --text-contrast: var(--color-base);
+
+    --bg-base: var(--color-base);
+    --bg-contrast: var(--color-contrast);
+
+    /* Additional colors */
+    --text-muted: oklch(from var(--color-contrast) calc(l + 1.75 * var(--lighten-calc)) c h);
+    --text-disabled: oklch(from var(--color-contrast) calc(l + var(--lighten-calc)) c h);
+    --text-placeholder: oklch(from var(--color-contrast) calc(l + 2 * var(--lighten-calc)) c h);
+
+    --link-unvisited: var(--color-accent);
+    --link-visited: oklch(from var(--color-accent) calc(l - 0.2 * var(--darken-calc)) c h);
+    --link-hover: oklch(from var(--color-accent) calc(l + 0.2 * var(--lighten-calc)) c h);
+    --link-active: oklch(from var(--color-accent) calc(l + 0.4 * var(--lighten-calc)) c h);
+
+    --border-base: oklch(from var(--color-base) calc(l + 0.1 * var(--lighten-calc)) c h);
+    --border-contrast: oklch(from var(--color-contrast) calc(l + 0.1 * var(--lighten-calc)) c h);
+
+    --shadow-base: oklch(from var(--color-base) calc(l - 0.2 * var(--darken-calc)) c h);
+    --shadow-contrast: oklch(from var(--color-contrast) calc(l - 0.2 * var(--darken-calc)) c h);
+
+    /* NOTICE COLORS */
+    --success-base: oklch(from var(--color-accent) calc(l + 0.2 * var(--lighten-calc)) c h);
+    --success-contrast: oklch(from var(--color-accent) calc(l - 0.2 * var(--darken-calc)) c h);
+    --success-background: oklch(from var(--color-accent) calc(l + 0.4 * var(--lighten-calc)) c h);
+
+    --warning-base: oklch(from var(--color-accent) calc(l + 0.1 * var(--lighten-calc)) c h);
+    --warning-contrast: oklch(from var(--color-accent) calc(l - 0.1 * var(--darken-calc)) c h);
+    --warning-background: oklch(from var(--color-accent) calc(l + 0.2 * var(--lighten-calc)) c h);
+
+    --error-base: oklch(0.53 0.05 0); /* a deep red color */
+    --error-contrast: oklch(0.83 0.05 0); /* a lighter red color */
+    --error-background: oklch(0.73 0.05 0); /* a medium red color */
+  }
+}

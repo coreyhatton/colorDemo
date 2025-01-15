@@ -1,0 +1,75 @@
+@layer theming.root {
+  :root {
+    scroll-behavior: smooth;
+    @media (prefers-reduced-motion: reduce) {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    /* Set our main font settings on the html element. */
+    font-size: var(--fontsize-md);
+    font-family: var(--font-main);
+    line-height: var(--line-height);
+    color: var(--text-base, inherit);
+  }
+
+  /* Prevent scripts from impacting line heights. */
+  sub,
+  sup {
+    line-height: 0;
+  }
+
+  /* Basic typographic styles. */
+  *::before,
+  *::after,
+  select,
+  input,
+  textarea,
+  button,
+  legend,
+  figcaption,
+  p,
+  ul,
+  ol,
+  a,
+  q,
+  cite,
+  span,
+  small,
+  th,
+  td,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--text-base, inherit);
+  }
+
+  /* Inheritance in place for child inline elements */
+  legend *,
+  figcaption *,
+  button *,
+  p *,
+  ul *,
+  ol *,
+  a *,
+  q *,
+  cite *,
+  span *,
+  small *,
+  th *,
+  td *,
+  h1 *,
+  h2 *,
+  h3 *,
+  h4 *,
+  h5 *,
+  h6 * {
+    font-size: inherit;
+    font-style: inherit;
+    line-height: inherit;
+  }
+}

@@ -1,0 +1,737 @@
+@layer theming.core {
+  /* Set up the page canvas using a 3-column grid, where the outer cols are gutters. */
+  body {
+    background: var(--bg-base, Canvas);
+    color: var(--text-base, CanvasText);
+
+    display: grid;
+    grid-template:
+      "header header header" max-content
+      "gutter-start body gutter-end" 1fr
+      "footer footer footer" max-content / var(--page-centered-grid);
+    gap: var(--gutter, 1rem);
+
+    /* Default to content width column. */
+    & > *:not(script, style, template, link, [hidden]) {
+      grid-column: var(--page-content-column);
+      gap: var(--gutter, 1rem);
+    }
+  }
+}
+
+@layer theming.core {
+  /* Prevent long strings from overflowing container */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  :is(p, ul, ol):not(li *) {
+    margin: unset;
+  }
+
+  /* LISTS **********************/
+  :is(ul, ol):not(nav ul, nav ol) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gutter-xs);
+    margin-block: var(--spacing-xs);
+    padding-inline-start: var(--spacing-sm);
+    list-style-position: inside;
+
+    /* nested lists */
+    & & {
+      padding-inline-start: var(--spacing-lg);
+      margin-block-end: 0;
+    }
+
+    & li::marker {
+      display: inline-flex;
+      font: inherit;
+      text-align: none;
+    }
+
+    &[role="list"],
+    &[role="listbox"] {
+      padding-inline-start: 0;
+      list-style: none;
+    }
+  }
+
+  /* Custom marker for nested counters */
+  ol {
+    list-style: none;
+    counter-reset: item;
+
+    li {
+      padding-inline-start: 0;
+      &:before {
+        display: inline-flex;
+        content: counters(item, ".") ".";
+        counter-increment: item;
+        padding-inline-end: var(--spacing-md);
+      }
+    }
+  }
+
+  /* Description lists */
+  dl {
+    margin-block: var(--spacing-sm);
+
+    /* Description terms */
+    dt {
+      font-weight: bold;
+      font-family: var(--font-headings);
+    }
+
+    /* Description definitions */
+    dd {
+      margin-inline-start: var(--spacing-lg);
+    }
+  }
+
+  /* FIGURES **********************/
+  figure {
+    margin: unset;
+    max-inline-size: 100%;
+    overflow-x: auto;
+
+    > img,
+    > picture > img {
+      max-width: 100%;
+      margin-inline: auto;
+    }
+
+    figcaption {
+      text-align: center;
+      font-size: 0.9em;
+      color: var(--text-muted);
+    }
+  }
+
+  /* HEADINGS **********************/
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headings);
+    text-wrap: balance;
+    font-weight: bold;
+    font-size: var(--fontsize-md, 1rem);
+
+    margin-block-start: var(--spacing-md);
+    margin-block-end: var(--spacing-sm);
+
+    &:first-child,
+    & + & {
+      margin-block-start: var(--spacing-sm);
+    }
+
+    /* Adds a marker when the url fragment matches a specified target element */
+    /* e.g. navigating to https://developer.mozilla.org/en-US/docs/Web/CSS/:target#syntax  */
+    &:target::before,
+    header:target &::before,
+    *:target header &::before {
+      content: "";
+      display: inline-block;
+      padding-inline-end: 3px;
+      margin-inline-end: 0.5ch;
+      vertical-align: middle;
+      height: 1.2lh;
+      background-color: var(--secondary-l1);
+    }
+  }
+
+  :is(h1, h2, h3) {
+    /* Larger text sizes reduce the line height. Ensures change on font too. ???*/
+    line-height: calc(var(--line-height) * 0.8);
+  }
+
+  h1 {
+    margin-block-end: var(--spacing-sm);
+    font-size: var(--fontsize-title);
+    font-weight: bolder;
+    color: var(--color-primary);
+  }
+
+  h2 {
+    font-size: var(--fontsize-xl);
+  }
+
+  h3 {
+    font-size: var(--fontsize-lg);
+  }
+
+  h4 {
+    font-weight: bolder;
+  }
+
+  h5 {
+    font-weight: bold;
+  }
+
+  h6 {
+    font-size: var(--fontsize-sm);
+    text-transform: uppercase;
+  }
+
+  /* LINKS & BUTTONS **********************/
+
+  button,
+  .button,
+  a.button,
+  [role="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="button"],
+  label[type="button"],
+  input[type="file"]::file-selector-button {
+    border: 1px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    background-color: var(--color-accent);
+    color: var(--text-contrast);
+    font-weight: 600;
+    padding-block: var(--spacing-sm);
+    padding-inline: var(--spacing-md);
+    text-decoration: none;
+    line-height: normal;
+
+    transition: all 0.2s ease-in-out;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: var(--accent-l1);
+      color: var(--text-contrast);
+      transition: all 0.2s ease-in-out;
+    }
+
+    &:active {
+      color: var(--text-base);
+      background-color: var(--accent-l2);
+      scale: 1.05;
+    }
+
+    &:focus {
+      outline-color: var(--focus-outline);
+      outline-style: auto;
+      outline-width: 2px;
+      outline-offset: 2px;
+    }
+  }
+
+  input:not(*:disabled) {
+    &:focus {
+      outline-color: var(--focus-outline);
+      outline-style: auto;
+      outline-width: 2px;
+      outline-offset: 2px;
+    }
+  }
+
+  .button:disabled,
+  .button[aria-disabled="true"],
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button[disabled] {
+    cursor: not-allowed;
+    background-color: var(--color-gray-l2);
+    border-color: var(--color-gray-l2);
+    color: var(--text-contrast);
+  }
+
+  footer {
+    p {
+      font-size: var(--fontsize-sm);
+    }
+
+    > :first-child {
+      margin-block-start: var(--spacing-md);
+    }
+
+    > :last-child {
+      margin-block-end: var(--spacing-sm);
+    }
+  }
+
+  /* GROUPING CONTENT */
+
+  code,
+  pre,
+  pre span,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+    font-style: normal;
+  }
+
+  /* per https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-kbd-element */
+  kbd kbd {
+    display: inline-block;
+    padding-inline: var(--spacing-sm);
+    padding-block: var(--spacing-xs);
+    margin-inline: var(--spacing-xs);
+
+    line-height: inherit;
+    font-size: 0.8em;
+    border: 1px outset var(--color-gray);
+    border-block-end-width: 3px;
+    border-radius: var(--border-radius);
+  }
+
+  samp {
+    color: var(--text-base-accent);
+  }
+
+  pre {
+    font-size: 0.9em;
+    tab-size: 2;
+
+    margin-block: var(--gutter);
+
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-accent) transparent;
+  }
+
+  blockquote,
+  figure:has(> blockquote) {
+    display: grid;
+    gap: inherit;
+
+    padding-block: var(--gutter);
+
+    &:is(blockquote),
+    + cite,
+    + :where(p, figcaption, div):has(cite) {
+      background-color: var(--bg-base);
+
+      padding-inline-start: var(--spacing-md);
+      padding-inline-end: var(--spacing-md);
+      margin-inline: var(--spacing-lg);
+      margin-block: unset;
+
+      border-inline-start: 4px solid var(--primary-l2);
+
+      font-size: var(--fontsize-md);
+      font-style: italic;
+      text-wrap: pretty;
+
+      &:is(cite, cite *, em, dfn, var, i, address),
+      & :is(cite, cite *, em, dfn, var, i, address) {
+        font-style: normal;
+      }
+    }
+
+    & + :where(figcaption, p, div, footer):has(cite),
+    &:not(blockquote) + cite {
+      margin-block-start: calc(0px - var(--gutter));
+      padding-block: var(--gutter);
+
+      &:not(p) {
+        display: flex;
+      }
+    }
+
+    &:not(blockquote) {
+      display: contents;
+    }
+
+    /* Extra styling added for the semantically-correct blockquote with non-child citation */
+    & blockquote,
+    &:is(blockquote):has(+ cite, + * cite) {
+      padding-block-end: 0;
+    }
+
+    :where(> cite:last-child, p + cite:last-child, p:has(cite):last-child, + p:has(cite):last-child),
+    &:not(blockquote) + :where(p, figcaption, div, footer):has(cite),
+    + :where(p, figcaption, div, footer):has(cite) {
+      font-size: var(--fontsize-sm);
+      font-style: normal;
+
+      &::before {
+        /* Insert an em dash before the cite source if it's not an inline citation */
+        content: "—\00a0";
+        align-self: center;
+        font-size: var(--fontsize-sm);
+      }
+    }
+  }
+
+  /* TEXT-LEVEL SEMANTICS */
+  a {
+    display: inline-flex;
+    gap: 1ch;
+    color: var(--link-unvisited, LinkText);
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+      color: var(--link-hover);
+    }
+
+    &:active {
+      color: var(--link-active, ActiveText);
+    }
+
+    &:visited {
+      color: var(--link-visited, VisitedText);
+    }
+  }
+
+  strong,
+  b {
+    font-weight: bolder;
+  }
+
+  small {
+    font-size: var(--fontsize-sm);
+  }
+
+  q {
+    font-style: italic;
+
+    & :is(em, cite, dfn, var, i, address) {
+      font-style: normal;
+    }
+  }
+
+  cite {
+    font-size: var(--fontsize-sm);
+  }
+
+  mark {
+    padding-inline: 0.2ch;
+    margin-inline: -0.1ch;
+    background-color: var(--color-mark, Mark);
+    color: var(--color-marktext, MarkText);
+  }
+
+  s,
+  del {
+    text-decoration-color: var(--error-base, #d32f2f);
+  }
+
+  del {
+    background-color: var(--error-bg, #d32f2f2f);
+  }
+
+  ins {
+    text-decoration-color: var(--success-base, #2e7d32);
+    background-color: var(--success-bg, #2e7d322f);
+  }
+
+  /* EMBEDDED CONTENT **********************/
+  img,
+  video,
+  audio,
+  iframe,
+  object,
+  embed {
+    max-inline-size: 100%;
+    block-size: auto;
+    vertical-align: middle;
+  }
+
+  img {
+    border-radius: var(--border-radius);
+  }
+
+  /* Background SVGs */
+  svg:not(:root, :backdrop) {
+    overflow: hidden;
+  }
+
+  /* TABULAR DATA **********************/
+  table {
+    --table-separator: 2px solid
+      light-dark(color-mix(in srgb, black 80%, transparent), color-mix(in srgb, white 80%, transparent));
+    --table-stripes: light-dark(var(--color-l3), var(--color-d3));
+    --table-background: color-mix(in srgb, transparent 80%);
+
+    position: relative;
+    margin-block-end: var(--spacing-md);
+
+    border-collapse: collapse;
+    box-shadow: var(--shadow);
+
+    :has(* > &) {
+      overflow-x: auto;
+    }
+
+    figure & {
+      inline-size: max-content;
+      box-shadow: unset;
+    }
+
+    caption {
+      margin-block-end: var(--spacing-sm);
+      font-weight: bold;
+      font-family: var(--font-headings);
+      text-wrap: balance;
+    }
+
+    td,
+    th {
+      padding-inline: var(--spacing-md);
+      padding-block: 0.5lh; /* Adjust padding by text size */
+      text-align: center;
+      border-inline: var(--table-separator);
+    }
+
+    tbody {
+      tr {
+        background-color: var(--table-background);
+
+        &:nth-child(even) {
+          background-color: var(--table-stripes);
+        }
+
+        &:first-child {
+          border-block-start: var(--table-separator);
+        }
+
+        &:last-child {
+          border-block-end: var(--table-separator);
+        }
+      }
+    }
+
+    thead,
+    tfoot {
+      tr {
+        border-block: var(--table-separator);
+      }
+
+      th,
+      td {
+        background-color: var(--color-primary);
+        color: var(--text-base-contrast);
+      }
+
+      td {
+        font-style: italic;
+        font-weight: normal;
+        font-size: var(--fontsize-sm);
+        padding-block: 0.5lh;
+      }
+    }
+  }
+
+  /* INTERACTIVE CONTENT **********************/
+  /*  Note that there is currently no way to animate this without JS (other than the marker).  */
+  details {
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+
+    padding-inline: var(--spacing-md);
+    padding-block: var(--spacing-sm);
+
+    box-shadow: var(--shadow);
+
+    summary {
+      font-weight: bold;
+      list-style: none;
+      position: relative;
+
+      padding-inline-start: var(--spacing-md);
+
+      cursor: pointer;
+      user-select: none;
+
+      z-index: 10;
+
+      &::before {
+        content: "";
+        border: 1ex solid transparent;
+        border-left-color: var(--color-primary);
+        transform: rotate(0);
+        transform-origin: 25% 50%;
+        transition: 250ms transform ease-in-out;
+
+        position: absolute;
+        left: calc(0px - var(--spacing-md));
+        top: 50%;
+        translate: var(--spacing-md) -48%;
+      }
+    }
+
+    &[open] {
+      summary {
+        margin-block-end: var(--spacing-sm);
+
+        &::before {
+          transform: rotate(90deg);
+        }
+      }
+    }
+  }
+
+  /* FORMS **********************/
+  /* https://html.spec.whatwg.org/multipage/forms.html **/
+
+  /* Change the placeholder text to be more accessible. */
+  /* https://www.w3.org/WAI/tutorials/forms/instructions/
+  form {
+    ::placeholder {
+      color: var(--color-gray);
+      opacity: 1;
+    }
+
+    :where(ul, ol):has([type='radio'], [type='checkbox']) {
+      padding-inline: unset;
+
+      li:has(> label, > input):has([type='radio'], [type='checkbox']) {
+        list-style: none;
+      }
+    }
+  }
+
+  form:has(fieldset ~ fieldset) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  fieldset {
+    display: grid;
+    grid-template-areas: 'label input';
+    grid-template-columns: fit-content(40%) minmax(auto, 100%);
+    gap: var(--spacing-md);
+    row-gap: var(--spacing-sm);
+    inline-size: 100%;
+    border-color: var(--color-border);
+    border-radius: var(--border-radius);
+
+    legend {
+      margin-block-end: var(--spacing-sm);
+      font-weight: bold;
+      text-wrap: balance;
+    }
+
+    * {
+      grid-column: -1 / 1;
+    }
+
+    :has(:where(input, label, button) + :where(input, label, button)):not(
+        :has(label + input)
+      ) {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gutter);
+    }
+
+    :has(> label input):not(li) {
+      display: grid;
+      grid-column: -1 / 1;
+      grid-template-columns: subgrid;
+
+      label {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: -1 / 1;
+        text-align: end;
+        align-items: center;
+      }
+
+      input {
+        grid-area: input;
+      }
+    } */
+
+  /* If mixed inputs, align all text at start to match. */
+  /* &:has(* > label input):not(li):has(* > label + input):not(li)
+      :has(> label input):not(li)
+      label {
+      text-align: initial;
+    }
+
+    input:not(
+        [type='submit'],
+        [type='button'],
+        [type='reset'],
+        [type='checkbox'],
+        [type='radio'],
+        [type='file']
+      ),
+    select,
+    textarea {
+      padding-inline: var(--spacing-md);
+      padding-block: var(--spacing-sm);
+      border: 0.0625rem solid var(--color-gray);
+      border-radius: var(--border-radius);
+      vertical-align: top;
+
+      min-block-size: calc(
+        var(--fontsize-md) * var(--line-height) + var(--spacing-sm) * 2 +
+          var(--border-width, 1px) * 2
+      );
+      min-inline-size: max-content;
+      inline-size: 100%;
+
+      &:focus,
+      &:focus-within {
+        outline-color: var(--color-accent);
+      }
+    }
+
+    input[type='radio'],
+    input[type='checkbox'] {
+      vertical-align: middle;
+      position: relative;
+      inline-size: min-content;
+
+      &:checked {
+        background-color: var(--color-primary);
+      }
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  [type='search'],
+  [role='search'] {
+    --border-radius: 5rem;
+    border-radius: var(--border-radius);
+    border-width: 1px; 
+  }
+
+  [type='checkbox'],
+  [type='radio'],
+  [type='range'],
+  progress {
+    background: 0 0;
+    accent-color: var(--color-accent);
+  }
+
+  [type='file'] {
+    color: var(--text-base-muted);
+    inline-size: 100%;
+
+    &::file-selector-button {
+      --color-background: var(--color-base);
+      --text-base-button: var(--text-base-contrast);
+
+      margin-block: var(--spacing-xs);
+      margin-inline-end: var(--spacing-md);
+      padding-block: var(--spacing-sm);
+
+      border-radius: var(--border-radius);
+      border: none;
+
+      background-color: var(--color-background);
+      color: var(--text-base-button);
+    }
+  }
+    */
+}

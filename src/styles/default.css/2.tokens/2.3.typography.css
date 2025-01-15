@@ -1,0 +1,66 @@
+@layer tokens.typography {
+  /*********************************************************************************************
+  * || 2.3. TYPOGRAPHY & FONTS ||
+  *********************************************************************************************/
+  :root,
+  ::backdrop {
+    /* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+    /* https://github.com/trys/utopia-core/blob/main/src/index.ts */
+
+    /* Theme's font variables. Change these to customise your theme's fonts. 
+     * Feel free to add font fallbacks separated by commas. */
+    --theme-font-headings: "Montserrat", "Lato";
+    --theme-font-main: "Lato";
+    --theme-font-mono: "ui-monospace";
+
+    --fontsize-base: 1rem; /* Default 16px base. */
+    --fixed-scale: 1.25; /* Major Third scale as base. */
+    --line-height: 1.618; /* Golden Ratio as base. WCAG recommends for accessibility >1.5rlh. */
+
+    /* ADD NOTE ABOUT FLUID TYPOGS HERE */
+
+    --kerning: normal;
+    --kerning-tight: -0.04ch;
+    --kerning-loose: 0.1ch;
+
+    /* Use var(--sans-font-stack) as fallback font in sans-serif font properties for compatibility */
+    --sans-font-stack: "Lato", "Helvetica Neue", Helvetica, "Trebuchet MS", -apple-system, "Avenir Next", Avenir, Roboto,
+      Noto, "Segoe UI", Arial, sans-serif;
+    --serif-font-stack: "Arvo", Georgia, "Cambria", "Times New Roman", Times, serif;
+    --mono-font-stack: Consolas, Menlo, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", "Lucida Console",
+      "Lucida Sans Typewriter", "Courier New", monospace;
+
+    --font-main: var(--theme-font-main, --sans-font-stack), sans-serif;
+    --font-headings: var(--theme-font-headings, --sans-font-stack), sans-serif;
+    --font-mono: var(--theme-font-mono), var(--mono-font-stack), monospace;
+
+    /* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1240,18,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+    --step--2: clamp(0.6944rem, 0.6856rem + 0.0444vi, 0.72rem);
+    --step--1: clamp(0.8333rem, 0.8101rem + 0.1159vi, 0.9rem);
+    --step-0: clamp(1rem, 0.9565rem + 0.2174vi, 1.125rem);
+    --step-1: clamp(1.2rem, 1.1283rem + 0.3587vi, 1.4063rem);
+    --step-2: clamp(1.44rem, 1.3295rem + 0.5527vi, 1.7578rem);
+    --step-3: clamp(1.728rem, 1.5648rem + 0.8161vi, 2.1973rem);
+    --step-4: clamp(2.0736rem, 1.8395rem + 1.1704vi, 2.7466rem);
+    --step-5: clamp(2.4883rem, 2.1597rem + 1.6433vi, 3.4332rem);
+
+    --fixed-step--2: calc(var(--fontsize-base) * pow(var(--fixed-scale), -2));
+    --fixed-step--1: calc(var(--fontsize-base) * pow(var(--fixed-scale), -1));
+    --fixed-step-0: calc(var(--fontsize-base) * pow(var(--fixed-scale), 0));
+    --fixed-step-1: calc(var(--fontsize-base) * pow(var(--fixed-scale), 1));
+    --fixed-step-2: calc(var(--fontsize-base) * pow(var(--fixed-scale), 2));
+    --fixed-step-3: calc(var(--fontsize-base) * pow(var(--fixed-scale), 3));
+    --fixed-step-4: calc(var(--fontsize-base) * pow(var(--fixed-scale), 4));
+    --fixed-step-5: calc(var(--fontsize-base) * pow(var(--fixed-scale), 5));
+
+    --fontsize-xs: var(--step--2, --fixed-step--2);
+    --fontsize-sm: var(--step--1, --fixed-step--1);
+    --fontsize-md: var(--step-0, --fixed-step-0);
+    --fontsize-lg: var(--step-1, --fixed-step-1);
+    --fontsize-xl: var(--step-2, --fixed-step-2);
+    --fontsize-xxl: var(--step-3, --fixed-step-3);
+    --fontsize-title: var(--step-4, --fixed-step-4);
+    --fontsize-huge: var(--step-5, --fixed-step-5);
+  }
+}

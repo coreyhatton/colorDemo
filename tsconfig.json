@@ -1,0 +1,38 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "paths": {
+      "~/*": ["./app/*"],
+      "@/*": ["./*"]
+    },
+    "esModuleInterop": true,
+    "moduleDetection": "force",
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+
+    "rootDirs": ["."],
+    "baseUrl": ".",
+
+    // linting
+    "strict": true,
+    "checkJs": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": true,
+    "noUncheckedSideEffectImports": true,
+
+    "types": ["node", "vite/client", "react", "react-dom"],
+    "isolatedModules": true
+  }
+}

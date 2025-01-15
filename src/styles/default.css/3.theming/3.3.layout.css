@@ -1,0 +1,459 @@
+@layer theming.layout.header {
+  /* Header, Main, Footer specifics */
+
+  /********** HEADER **********/
+  :is(header, footer):not(main *) {
+    grid-column: -1 / 1; /* We extend these sections to set a full-length background... */
+
+    display: grid;
+    grid-template-columns: var(--page-centered-grid);
+    /* ... but keep the content contained to our defined content-width.  */
+
+    background-color: var(--bg-primary);
+    /* text-align: center; */
+
+    row-gap: var(--gutter-sm);
+    margin-block-end: 0;
+
+    & > * {
+      grid-column: var(--page-content-column);
+      margin: auto;
+    }
+
+    & > *:first-child {
+      margin-block-start: var(--gutter-sm);
+    }
+
+    & > *:last-child {
+      margin-block-end: var(--gutter);
+    }
+
+    &:is(header):has(+ :not(nav)) {
+      border-bottom: 2px solid var(--color-secondary);
+    }
+
+    &:is(footer) {
+      text-align: center;
+      font-size: var(--fontsize-sm);
+      border-top: 2px solid var(--color-tertiary);
+    }
+  }
+
+  hgroup,
+  header > *:not(:only-child) {
+    margin: unset;
+  }
+
+  /* Nav inside header */
+  /* header nav {
+    &:not(:last-child) {
+      place-items: inline-start;
+    }
+  } */
+
+  /********** ASIDE (usually sidebar) **********/
+
+  aside:not(main aside) {
+    font-size: var(--fontsize-sm);
+    border-block: 1px solid var(--color-border);
+    padding-block: var(--gutter);
+    margin-block: var(--spacing-sm);
+
+    & h1,
+    & h2,
+    & h3,
+    & h4,
+    & h5,
+    & h6 {
+      font-size: var(--font-main);
+      text-transform: none;
+      letter-spacing: none;
+    }
+  }
+}
+
+@layer theming.layout.nav {
+  /********** NAV **********/
+  /* Connect nav to header if present. */
+  header + nav {
+    margin-block-start: calc(0px - var(--gutter));
+    border-bottom: 4px solid var(--color-border);
+    grid-column: var(--page-full-column);
+    grid-template-columns: subgrid;
+  }
+
+  /* ADD BUTTON STYLES FOR ACCESSIBILITY
+    https://www.a11y-collective.com/blog/accessible-mega-menu/
+ */
+
+  nav:not(main nav) {
+    --nav-block-spacing: var(--spacing-xs);
+
+    background-color: var(--primary-d1);
+    display: grid;
+
+    &:where(header &) {
+      grid-column: var(--page-full-column);
+    }
+
+    & > :is(ul, ol, menu) {
+      grid-column: var(--page-content-column);
+    }
+
+    :is(menu, ul, ol) {
+      display: grid;
+      padding-inline: 0;
+      gap: var(--gutter-sm);
+
+      list-style: none;
+      color: var(--text-contrast);
+      font-size: var(--fontsize-md);
+      text-align: center;
+      align-items: center;
+
+      li {
+        position: relative;
+        padding-inline: var(--spacing-sm);
+        background-color: transparent;
+
+        transition: background-color 280ms ease-in-out;
+
+        & a {
+          color: inherit;
+        }
+      }
+
+      /* Stretched link */
+      & li > a::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        cursor: pointer;
+      }
+
+      /* & li:first-of-type > a::after {
+        top: -1em;
+      } */
+
+      &:has(menu, ul, ol) {
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+
+        a {
+          text-decoration: none;
+          color: inherit;
+          align-content: center;
+        }
+
+        a:hover,
+        a:focus,
+        a:active {
+          /* text-decoration: underline; */
+        }
+      }
+
+      /* Mouseover nav menu
+       * Note that for the nav menu to be properly accessible according to WCAG, some 
+       * Javascript is required for keyboard functionality. @LINK
+       */
+      & & {
+        /* visibility: hidden; */
+        /* content-visibility: hidden; */
+        opacity: 0;
+
+        pointer-events: none;
+        z-index: 10;
+
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        translate: -50% calc(0px - var(--spacing-sm));
+
+        min-inline-size: 90%;
+        align-items: center;
+
+        color: initial;
+        border-radius: 4px;
+        box-shadow: var(--shadow);
+        background-color: var(--bg-primary);
+
+        /* transform: rotateX(90deg); */
+        transition: 120ms all 120ms ease-in-out allow-discrete;
+
+        & li:first-of-type {
+          margin-block-start: var(--spacing-sm);
+        }
+      }
+
+      & li:has(&) {
+        /* position: absolute; */
+        padding-block: var(--nav-block-spacing, var(--spacing-xs));
+        padding-inline: var(--spacing-md);
+        align-self: center;
+
+        &:hover,
+        &:focus-within {
+          background-color: color-mix(in oklab, transparent 80%, white);
+          transition: background-color 280ms ease-in-out;
+
+          ul,
+          ol {
+            pointer-events: initial;
+            opacity: 1;
+            /* content-visibility: auto; */
+            /* visibility: visible; */
+            /* transform: rotateX(0); */
+            translate: -50% var(--spacing-sm);
+
+            &::after {
+              opacity: 1;
+            }
+          }
+        }
+
+        /* Add arrow to open submenus */
+        &::after,
+        &::after {
+          content: "";
+          inline-size: 0.5em;
+          border: 0.25em solid transparent;
+          border-top-color: color-mix(in oklab, Canvas, transparent);
+          margin-inline-start: 0.25em;
+          transform: translateY(0.8em);
+          align-self: center;
+          position: absolute;
+        }
+      }
+    }
+  }
+}
+
+@layer theming.layout {
+  /* FORMS **********************/
+  /* https://html.spec.whatwg.org/multipage/forms.html **/
+  form {
+    --border-width: 1px;
+    --border-style: solid;
+    --border-color: var(--color-gray);
+    --color-fieldset-border: var(--color-border);
+    --color-form-legend: var(--color-primary);
+
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    gap: var(--gutter);
+
+    /* Change the placeholder text to be more accessible. */
+    /* https://www.w3.org/WAI/tutorials/forms/instructions/ */
+    ::placeholder {
+      color: var(--color-gray);
+      opacity: 1;
+    }
+
+    /* Remove the list styles for radio and checkbox inputs */
+    :where(ul, ol):has([type="radio"], [type="checkbox"]) {
+      padding-inline: unset;
+
+      li:has(> label, > input):has([type="radio"], [type="checkbox"]) {
+        list-style: none;
+      }
+    }
+  }
+
+  input {
+    overflow-x: auto;
+
+    *:has(> &) {
+      min-inline-size: 0;
+    }
+  }
+
+  fieldset {
+    display: grid;
+    grid-template-areas: "label input";
+    grid-template-columns: fit-content(40%) auto;
+    column-gap: clamp(var(--gutter-sm), var(--gutter), var(--gutter)); /* Shrinks to small at low viewport width */
+    row-gap: var(--gutter);
+
+    padding-inline: var(--spacing-md);
+    padding-block-start: var(--spacing-sm);
+    padding-block-end: var(--spacing-md);
+
+    border-color: var(--color-fieldset-border, var(--color-border-t));
+    border-radius: var(--border-radius);
+
+    legend {
+      font-weight: bold;
+      font-family: var(--font-headings);
+      color: var(--color-form-legend);
+    }
+
+    /* Align everything to the outer edges of the containing fieldset by default */
+    * {
+      grid-column: -1 / 1;
+    }
+
+    /* 
+    *  EXPLICIT INPUT LABELS
+    *  When the <Input> element is placed sequential to the <Label> element, display
+    *  them vertically stacked. This is the recommended layout for quick completion of 
+    *  forms, although it does increase the vertical real estate required.  
+    */
+    & *:has(> * + *, > input:only-child):not(label) {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 
+    *  IMPLICIT INPUT LABELS 
+    *  When the <Input> element is nested within the <Label> element, display
+    *  them horizontally with consistent label and input widths.  
+    */
+    & *:has(> label input):not(li) {
+      display: grid;
+      grid-column: -1 / 1;
+      grid-template-columns: subgrid;
+
+      label {
+        display: grid;
+        grid-template-columns: subgrid;
+        text-align: end;
+        align-items: center;
+      }
+
+      input {
+        grid-area: input;
+        max-inline-size: 100%;
+      }
+    }
+  }
+
+  input:not(
+      [type="submit"],
+      [type="button"],
+      [type="reset"],
+      [type="checkbox"],
+      [type="radio"],
+      [type="file"],
+      [type="color"]
+    ),
+  select,
+  textarea {
+    /* Padding is based on text size within inputs */
+    padding-block: 0.5em;
+    padding-inline: 1em;
+    vertical-align: top;
+
+    border-width: var(--border-width);
+    border-style: var(--border-style);
+    border-color: var(--border-color);
+
+    &,
+    *:has(> &) {
+      min-inline-size: 20ch;
+    }
+
+    &:focus,
+    &:focus-within {
+      outline-color: var(--color-accent);
+      outline-offset: var(--border-width);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  [type="checkbox"],
+  [type="radio"],
+  [type="range"],
+  progress {
+    background: 0 0;
+    accent-color: var(--color-primary);
+  }
+
+  [type="radio"],
+  [type="checkbox"] {
+    position: relative;
+    inline-size: fit-content;
+    margin-inline-end: var(--gutter-sm);
+
+    cursor: pointer;
+
+    label:has(&),
+    ~ label {
+      cursor: pointer;
+    }
+  }
+
+  [type="search"],
+  [role="search"] {
+    border-radius: 1.2em;
+  }
+
+  [type="file"] {
+    color: var(--text-muted);
+    inline-size: 100%;
+
+    &::file-selector-button {
+      margin-inline-end: var(--gutter);
+    }
+  }
+}
+
+@layer theming.layout {
+  main :is(article, section, nav, aside, hgroup, address) {
+    padding-block: var(--spacing-md);
+  }
+
+  section,
+  article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  article,
+  form:has(fieldset) {
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow);
+  }
+
+  article:has(article) {
+    --calc: calc(var(--calc, 90%) - 10%);
+    --article-background: color-mix(in oklab, var(--color-primary) var(--calc), transparent);
+    article {
+      --article-background: color-mix(in oklab, var(--color-primary) var(--calc), transparent);
+      article {
+        --article-background: color-mix(in oklab, var(--color-primary) var(--calc), transparent);
+      }
+    }
+  }
+
+  hr {
+    display: block;
+    background-color: var(--color-tertiary);
+    border: none;
+    height: 1px;
+    width: 100%;
+  }
+
+  section,
+  main > div {
+    display: flex;
+    flex-direction: column;
+
+    &:not(:first-of-type) {
+      border-top: 2px solid var(--color-primary);
+    }
+  }
+
+  main > * + * {
+    margin-block-start: var(--spacing-md);
+  }
+}

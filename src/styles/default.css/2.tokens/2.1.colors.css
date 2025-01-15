@@ -1,6 +1,6 @@
 @layer tokens.colors {
   /*********************************************************************************************
-  * || 1. COLOR SCHEME AND PALETTE ||
+  * || 2.1. COLOR SCHEME AND PALETTE ||
   *********************************************************************************************/
   :root,
   ::backdrop {
@@ -10,6 +10,12 @@
 
     --color-base: #ffffff; /* REQUIRED */
     --color-contrast: #121212 /* REQUIRED */;
+    --color-gray-l2: #f1f1f1;
+    --color-gray-l1: #d2d2d2;
+    --color-gray: #b3b3b3;
+    --color-muted-d1: #949494;
+    --color-muted-d2: #767676;
+    --color-muted-d3: #595959;
 
     --userColor-primary: teal /* REQUIRED */;
     /* --userColor-secondary: xxx; */
@@ -66,6 +72,10 @@
 
     --bg-base: var(--color-base);
     --bg-contrast: var(--color-contrast);
+    --bg-primary: var(--color-primary-l2);
+    --bg-secondary: var(--color-secondary-l2);
+    --bg-tertiary: var(--color-tertiary-l2);
+    --bg-accent: var(--color-accent-l2);
 
     /* Additional colors */
     --text-muted: oklch(from var(--color-contrast) calc(l + 1.75 * var(--lighten-calc)) c h);
@@ -77,23 +87,35 @@
     --link-hover: oklch(from var(--color-accent) calc(l + 0.2 * var(--lighten-calc)) c h);
     --link-active: oklch(from var(--color-accent) calc(l + 0.4 * var(--lighten-calc)) c h);
 
-    --border-base: oklch(from var(--color-base) calc(l + 0.1 * var(--lighten-calc)) c h);
-    --border-contrast: oklch(from var(--color-contrast) calc(l + 0.1 * var(--lighten-calc)) c h);
-
-    --shadow-base: oklch(from var(--color-base) calc(l - 0.2 * var(--darken-calc)) c h);
-    --shadow-contrast: oklch(from var(--color-contrast) calc(l - 0.2 * var(--darken-calc)) c h);
+    --color-border: var(--color-primary);
+    --color-border-p: var(--color-primary);
+    --color-border-s: var(--color-secondary);
+    --color-border-t: var(--color-tertiary);
+    --color-border-a: var(--color-accent);
+    --color-border-muted: oklch(from var(--color-contrast) calc(l + 1.75 * var(--lighten-calc)) c h);
+    --color-border-disabled: oklch(from var(--color-contrast) calc(l + var(--lighten-calc)) c h);
 
     /* NOTICE COLORS */
     --success-base: oklch(from var(--color-accent) calc(l + 0.2 * var(--lighten-calc)) c h);
     --success-contrast: oklch(from var(--color-accent) calc(l - 0.2 * var(--darken-calc)) c h);
-    --success-background: oklch(from var(--color-accent) calc(l + 0.4 * var(--lighten-calc)) c h);
+    --success-bg: oklch(from var(--color-accent) calc(l + 0.4 * var(--lighten-calc)) c h);
 
     --warning-base: oklch(from var(--color-accent) calc(l + 0.1 * var(--lighten-calc)) c h);
     --warning-contrast: oklch(from var(--color-accent) calc(l - 0.1 * var(--darken-calc)) c h);
     --warning-background: oklch(from var(--color-accent) calc(l + 0.2 * var(--lighten-calc)) c h);
 
-    --error-base: oklch(0.53 0.05 0); /* a deep red color */
+    --error-base: oklch(0.63 0.05 0); /* a deep red color */
     --error-contrast: oklch(0.83 0.05 0); /* a lighter red color */
-    --error-background: oklch(0.73 0.05 0); /* a medium red color */
+    --error-bg: oklch(0.93 0.05 0); /* a very light red color */
+    --error-bg-dark: oklch(0.73 0.05 0); /* a medium red color */
+
+    /* SHADOWS */
+    --shadow-base: oklch(from var(--color-base) calc(l - 0.2 * var(--darken-calc)) c h);
+    --shadow-contrast: oklch(from var(--color-contrast) calc(l - 0.2 * var(--darken-calc)) c h);
+
+    --shadow-elevation-1: 0px 1px 3px var(--shadow-base), 0px 1px 2px var(--shadow-contrast);
+    --shadow: 0px 0px 2px var(--shadow-base), 0px 0px 1px var(--shadow-contrast);
+
+    --focus-outline: var(--color-tertiary);
   }
 }

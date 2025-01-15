@@ -1,3 +1,10 @@
-@import url('./1.setup/1.1.reset.css');
-@import url('./1.setup/1.0.layers.css');
-@import url('./2.tokens/2.1.colors.css');
+@import url("./1.setup/1.1.reset.css");
+@import url("./1.setup/1.0.layers.css");
+
+@import url("./2.tokens/2.1.colors.css");
+@import url("./2.tokens/2.2.spacing.css");
+@import url("./2.tokens/2.3.typography.css");
+
+@import url("./3.theming/3.1.root.css");
+@import url("./3.theming/3.2.core.css");
+@import url("./3.theming/3.3.layout.css");

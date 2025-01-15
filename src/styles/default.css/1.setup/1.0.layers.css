@@ -1,17 +1,17 @@
-@layer setup, tokens, theming, components, utilities;
+@layer setup, tokens, theming;
 
 @layer setup {
   @layer reset;
 }
 
 @layer tokens {
-  @layer config, userOverrides;
+  @layer colors, spacing, typography;
 }
 
 @layer theming {
   @layer root, core, layout;
 }
 
-@layer components;
+/* @layer components;
 
-@layer utilities;
+@layer utilities; */

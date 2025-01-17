@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.7",
     "clsx": "^2.1.1",
     "colorjs.io": "^0.5.2",
     "lodash": "^4.17.21",

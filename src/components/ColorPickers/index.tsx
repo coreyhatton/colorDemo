@@ -5,6 +5,11 @@ import Color from "colorjs.io";
 import useCssCustomProperties from "../../utils/useCssCustomProps";
 import { toHex } from "../../utils/colorUtils";
 
+import styles from "./ColorPickers.module.css";
+import { Button } from "../Button";
+import { ArrowClockwise, ArrowCounterClockwise } from "@phosphor-icons/react";
+import { mergeProps } from "react-aria";
+
 /**
  * Component for rendering a collection of color pickers to manipulate CSS custom properties.
  * Users can select colors for defined categories and update corresponding CSS variables.
@@ -76,21 +81,62 @@ export const ColorPickers = (props: { rootRef?: any; colors?: any }) => {
   };
 
   return (
-    <div style={{ display: "flex", gap: "1rem" }}>
-      {Object.keys(colors).map((color) => {
-        return (
-          <ColorPicker
-            key={color}
-            colorCategory={color}
-            colorState={colorStates[color]}
-            label={`${_.startCase(color)} color:`}
-            handleChange={handleChangeComplete}
-          />
-        );
-      })}
+    <>
+      <header className={styles.header}>
+        <h2 className={styles.middle}>Calculated color palette</h2>
+        <ResetButton
+          handlePress={handleReset}
+          icon={ArrowCounterClockwise}
+          className={`${styles.end} ${styles.reset}`}
+        />
+      </header>
+      <div className={styles.main}>
+        {Object.keys(colors).map((color) => {
+          return (
+            <ColorPicker
+              key={color}
+              colorCategory={color}
+              colorState={colorStates[color]}
+              label={`${_.startCase(color)} color:`}
+              handleChange={handleChangeComplete}
+            />
+          );
+        })}
+      </div>
+    </>
+  );
+};
 
-      <button onClick={handleReset}>Reset</button>
-    </div>
+const ResetButton = ({ handlePress, icon, ...props }) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const iconProps = useMemo(
+    () => ({ className: `${isAnimating ? styles.animate : ""}` }),
+    [isAnimating]
+  );
+
+  const handleMouseOver = () => {
+    setIsAnimating(true);
+  };
+
+  const handleAnimationEnd = () => {
+    setIsAnimating(false);
+  };
+
+  const renderIcon = (Icon, iconProps) => {
+    return <Icon {...Icon.props} {...iconProps} />;
+  };
+
+  return (
+    <Button
+      {...props}
+      variant="reset"
+      onMouseEnter={handleMouseOver}
+      onAnimationEnd={handleAnimationEnd}
+      title="Reset colors to initial state"
+    >
+      {renderIcon(icon, iconProps)}
+    </Button>
   );
 };
 
@@ -103,8 +149,6 @@ export const ColorPickers = (props: { rootRef?: any; colors?: any }) => {
  * @prop {function} handleChange - The callback to be called when the color
  * changes. It takes two arguments: the color category and the new color value.
  * @prop {string} [label=""] - The label to be displayed next to the color input.
- * @prop {string} [labelPosition="top"] - The position of the label. It can be
- * "top" or "left".
  * @prop {boolean} [onComplete=false] - If true, the handleChange callback will
  * be called only when the user finishes picking the color. If false, the
  * callback will be called each time the user changes the color.
@@ -116,7 +160,6 @@ const ColorPicker = ({
   colorState,
   handleChange,
   label = "",
-  labelPosition = "top",
   onComplete = false,
 }) => {
   const [currentColor, setCurrentColor] = useState(colorState.value);
@@ -148,14 +191,7 @@ const ColorPicker = ({
   }, [colorState.value]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: labelPosition === "top" ? "column" : "row",
-        alignItems: "center",
-        gap: "0.5rem",
-      }}
-    >
+    <div className={styles.pickers}>
       {label && <label htmlFor="{`${colorCategory}-input`}">{label}</label>}
       <input
         id={`${colorCategory}-input`}

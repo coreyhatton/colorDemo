@@ -44,15 +44,7 @@
     margin: unset;
   }
 
-  /* Nav inside header */
-  /* header nav {
-    &:not(:last-child) {
-      place-items: inline-start;
-    }
-  } */
-
   /********** ASIDE (usually sidebar) **********/
-
   aside:not(main aside) {
     font-size: var(--fontsize-sm);
     border-block: 1px solid var(--color-border);

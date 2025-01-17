@@ -10,7 +10,7 @@ import styles from "./ColorBlocks.module.css";
 export const ColorBlocks = (props) => {
   const { categories } = props;
 
-  const colorTokens = categories.map((category) => ({
+  const colorTokens = categories.map((category: any) => ({
     category,
     propertyName: `--color-${category}`,
     cssTokens: [
@@ -26,8 +26,7 @@ export const ColorBlocks = (props) => {
 
   return (
     <div className={styles.main}>
-      <h2>Calculated color palette</h2>
-      <ColorVariations colorObjects={colorTokens} />
+      <ColorColumns colorObjects={colorTokens} />
     </div>
   );
 };
@@ -44,7 +43,7 @@ const ColorBlock = (props) => {
 
   return (
     <div id={id} className={clsx(styles.blocks, className)} style={style}>
-      {props.children && props.children}
+      {props.children}
     </div>
   );
 };
@@ -59,26 +58,20 @@ const ColorBlock = (props) => {
  *
  * @returns A React component that renders a collection of color blocks.
  */
-const ColorVariations = ({ colorObjects }) => {
+const ColorColumns = ({ colorObjects }) => {
   return (
     <>
       {colorObjects.map(({ category, cssTokens }) => {
         return (
-          <div key={category} className={styles.columns}>
+          <div key={category} className={styles.column}>
             {cssTokens.map((cssVar) => (
               <ColorBlock
                 key={`${category}-${cssVar.slice(6, -1)}`}
                 id={`${cssVar.slice(6, -1)}`}
                 style={{ backgroundColor: cssVar }}
               >
-                <span
-                  style={{
-                    color: "white",
-                    fontSize: "small",
-                  }}
-                >
-                  {cssVar}
-                </span>
+                <p>{cssVar}</p>
+                <p>{category}</p>
               </ColorBlock>
             ))}
           </div>

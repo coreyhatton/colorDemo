@@ -12,23 +12,23 @@ export const App = () => {
   const initialColors = initializeColors(categories);
 
   return (
-    <div className="app-main">
-      <header>
+    <>
+      <header className="header">
         <h1>default.css Color Demo</h1>
         <p>
           Color system using relative color functions implemented entirely in
           css
         </p>
       </header>
-      <div className="card">
+      <main className="card">
         <ColorPickers colors={initialColors} rootRef={rootRef} />
         <ColorBlocks categories={categories} />
         <p>Change the colors using the above color pickers</p>
-      </div>
-      <footer>
+      </main>
+      <footer className="footer">
         <p className="read-the-docs">Made for fun by Corey Hatton</p>
       </footer>
-    </div>
+    </>
   );
 };
 

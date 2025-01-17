@@ -150,8 +150,7 @@
   }
 
   :is(h1, h2, h3) {
-    /* Larger text sizes reduce the line height. Ensures change on font too. ???*/
-    line-height: calc(var(--line-height) * 0.8);
+    line-height: var(--line-height-condensed);
   }
 
   h1 {
@@ -203,36 +202,27 @@
     text-decoration: none;
     line-height: normal;
 
-    transition: all 0.2s ease-in-out;
-
-    &:hover,
-    &:focus,
-    &:active {
-      background-color: var(--accent-l1);
-      color: var(--text-contrast);
+    &:not(:disabled, [aria-disabled="true"], [disabled]) {
       transition: all 0.2s ease-in-out;
-    }
 
-    &:active {
-      color: var(--text-base);
-      background-color: var(--accent-l2);
-      scale: 1.05;
-    }
+      &:hover,
+      &:focus-visible,
+      &:focus-within {
+        background-color: var(--accent-l1);
+        color: var(--text-contrast);
+        transition: all 0.2s ease-in-out;
+        scale: 1.05;
+      }
 
-    &:focus {
-      outline-color: var(--focus-outline);
-      outline-style: auto;
-      outline-width: 2px;
-      outline-offset: 2px;
-    }
-  }
+      &:active {
+        color: var(--text-base);
+        background-color: var(--accent-l2);
+      }
 
-  input:not(*:disabled) {
-    &:focus {
-      outline-color: var(--focus-outline);
-      outline-style: auto;
-      outline-width: 2px;
-      outline-offset: 2px;
+      &:focus-visible {
+        outline: 2px solid var(--focus-outline);
+        outline-offset: var(--spacing-xs);
+      }
     }
   }
 
@@ -241,11 +231,20 @@
   input:disabled,
   textarea:disabled,
   select:disabled,
+  button:disabled,
   button[disabled] {
     cursor: not-allowed;
-    background-color: var(--color-gray-l2);
-    border-color: var(--color-gray-l2);
-    color: var(--text-contrast);
+    background-color: var(--bg-disabled);
+    border-color: var(--bg-disabled);
+    color: var(--text-disabled);
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: var(--bg-disabled);
+      border-color: var(--bg-disabled);
+      color: var(--text-disabled);
+    }
   }
 
   footer {

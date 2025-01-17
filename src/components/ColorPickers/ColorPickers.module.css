@@ -1,0 +1,76 @@
+.main {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+
+.header {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+
+  .middle {
+    place-self: center;
+    grid-column: 2 / -2;
+  }
+
+  .end {
+    place-self: end;
+    grid-column: -1;
+  }
+}
+
+.reset {
+  --primary-glow: radial-gradient(var(--primary-l3), rgba(1, 65, 255, 0));
+  --secondary-glow: radial-gradient(rgba(1, 65, 255, 0), var(--primary-l3));
+  position: relative;
+}
+
+/* .reset::before {
+  background: var(--secondary-glow);
+  border-radius: 50%;
+  width: 80%;
+  height: 80%;
+}
+
+.reset::after {
+  background: var(--primary-glow);
+  width: 80%;
+  height: 80%;
+  z-index: -1;
+}
+
+.reset::before,
+.reset::after {
+  --blur: 6px;
+  content: "";
+  left: 50%;
+  position: absolute;
+  filter: blur(var(--blur));
+  transform: translateZ(0);
+} */
+
+.animate {
+  animation: spin 1s ease-out forwards;
+
+  & ::before,
+  & ::after {
+    --blur: 35px;
+  }
+}
+
+@keyframes spin {
+  0% {
+    rotate: 360deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
+}
+
+.pickers {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}

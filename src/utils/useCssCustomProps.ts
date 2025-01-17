@@ -193,13 +193,26 @@ export const useCssCustomProperties = (
     if (!!root.computedStyleMap) {
       const style = root.computedStyleMap();
 
-      const styles = style
-        .entries()
-        .filter(([key]) => key.startsWith("--"))
-        .map(([key, value]) => ({ [key]: value.toString() }));
+      // Iterator helpers not currently available in Safari
+      // const styles = !style
+      //   ? []
+      //   : style
+      //       .entries()
+      //       .filter(([key]) => key.startsWith("--"))
+      //     .map(([key, value]) => ({ [key]: value.toString() }));
 
-      const propertyObject = Object.assign({}, ...styles);
-      return propertyObject;
+      // const propertyObject = Object.assign({}, ...styles);
+      // return propertyObject;
+
+      const styles = {};
+      if (!!style) {
+        for (const [key, value] of style) {
+          if (key.startsWith("--")) {
+            styles[key] = value.toString();
+          }
+        }
+      }
+      return styles;
     } else {
       // firefox-specific workaround
       const style = getComputedStyle(root);

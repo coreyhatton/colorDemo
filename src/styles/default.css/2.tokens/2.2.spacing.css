@@ -30,7 +30,8 @@
     --spacing-0: calc(var(--spacing-unit) * 0);
 
     /* Use our spacing unit to compute spacing variables that align to our baseline grid. */
-    --spacing-xs: calc(var(--spacing-unit, 1rlh) * 0.2);
+    --spacing-xxs: calc(var(--spacing-unit, 1rlh) * 0.2);
+    --spacing-xs: calc(var(--spacing-unit, 1rlh) * 0.33);
     --spacing-sm: calc(var(--spacing-unit, 1rlh) * 0.5);
     --spacing-md: var(--spacing-unit, 1rlh);
     --spacing-lg: calc(var(--spacing-unit, 1rlh) * 2);

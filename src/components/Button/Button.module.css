@@ -1,0 +1,31 @@
+.main {
+  /*  
+  *   Current version of React Aria's usePress hook (used in 
+  *   useButton hook) doesn't handle :focus-visible styling.
+  *   Using focus-ring functionality instead. 
+  *   @see https://github.com/adobe/react-spectrum/pull/7542
+  */
+  outline: none;
+
+  inline-size: max-content;
+}
+
+.focusRing:not(.disabled, :disabled, [disabled], [aria-disabled="true"]) {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: var(--spacing-xs);
+}
+
+/* add 'empty' style too */
+.icon {
+  background-color: transparent;
+  color: var(--text-base);
+  border: unset;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  block-size: max-content;
+  align-self: center;
+  cursor: pointer;
+}
+
+.isRounded {
+  border-radius: var(--spacing-md); /* matches spacing */
+}

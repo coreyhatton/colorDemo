@@ -1,22 +1,24 @@
 .main {
-  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: subgrid;
+  grid-template-columns: repeat(auto-fit, minmax(max(20ch, calc(25% - var(--gutter-sm))), 1fr));
+  gap: inherit;
 }
 
 .header {
-  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: subgrid;
+  grid-column: -1 / 1;
+  align-items: center;
 
   .middle {
     place-self: center;
     grid-column: 2 / -2;
+    grid-row: 1;
   }
 
   .end {
-    place-self: end;
+    place-self: center end;
     grid-column: -1;
+    grid-row: 1;
   }
 }
 
@@ -24,6 +26,9 @@
   --primary-glow: radial-gradient(var(--primary-l3), rgba(1, 65, 255, 0));
   --secondary-glow: radial-gradient(rgba(1, 65, 255, 0), var(--primary-l3));
   position: relative;
+}
+
+.pickers {
 }
 
 /* .reset::before {

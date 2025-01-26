@@ -3,45 +3,20 @@
 
   /********** HEADER **********/
   :is(header, footer):not(main *) {
-    grid-column: -1 / 1; /* We extend these sections to set a full-length background... */
-
-    display: grid;
-    grid-template-columns: var(--page-centered-grid);
-    /* ... but keep the content contained to our defined content-width.  */
-
-    background-color: var(--bg-primary);
-    /* text-align: center; */
-
     row-gap: var(--gutter-sm);
+    padding-block: var(--spacing-sm);
     margin-block-end: 0;
-
-    & > * {
-      grid-column: var(--page-content-column);
-      margin: auto;
-    }
-
-    & > *:first-child {
-      margin-block-start: var(--gutter-sm);
-    }
-
-    & > *:last-child {
-      margin-block-end: var(--gutter);
-    }
-
-    &:is(header):has(+ :not(nav)) {
-      border-bottom: 2px solid var(--color-secondary);
-    }
 
     &:is(footer) {
       text-align: center;
       font-size: var(--fontsize-sm);
       border-top: 2px solid var(--color-tertiary);
     }
-  }
 
-  hgroup,
-  header > *:not(:only-child) {
-    margin: unset;
+    hgroup,
+    header > *:not(:only-child) {
+      margin: unset;
+    }
   }
 
   /********** ASIDE (usually sidebar) **********/
@@ -433,19 +408,5 @@
     border: none;
     height: 1px;
     width: 100%;
-  }
-
-  section,
-  main > div {
-    display: flex;
-    flex-direction: column;
-
-    &:not(:first-of-type) {
-      border-top: 2px solid var(--color-primary);
-    }
-  }
-
-  main > * + * {
-    margin-block-start: var(--spacing-md);
   }
 }

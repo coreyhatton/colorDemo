@@ -1,14 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import _ from "lodash";
-import Color from "colorjs.io";
-
-import useCssCustomProperties from "../../utils/useCssCustomProps";
-import { toHex } from "../../utils/colorUtils";
+import { use, useEffect, useMemo, useState } from "react";
+import _, { set } from "lodash";
 
 import styles from "./ColorPickers.module.css";
 import { Button } from "../Button";
-import { ArrowClockwise, ArrowCounterClockwise } from "@phosphor-icons/react";
-import { mergeProps } from "react-aria";
+import { ArrowCounterClockwise } from "@phosphor-icons/react";
+import { ColorPickerContext } from "../../colorContext";
 
 /**
  * Component for rendering a collection of color pickers to manipulate CSS custom properties.
@@ -24,64 +20,65 @@ import { mergeProps } from "react-aria";
 export const ColorPickers = (props: { rootRef?: any; colors?: any }) => {
   const { colors } = props;
 
-  const {
-    setProperties: setCustomProperties,
-    computeColorProperty: computeCustomProperties,
-    resetToInitial: resetStyles,
-  } = useCssCustomProperties(props.rootRef);
+  const context = use(ColorPickerContext);
+  const { colorStates, handleChangeComplete, handleReset } = context ?? {};
 
-  const [colorStates, setColorStates] = useState(colors);
+  // const {
+  //   setProperties: setCustomProperties,
+  //   computeColorProperty: computeCustomProperties,
+  //   resetToInitial: resetStyles,
+  // } = useCssCustomProperties(props.rootRef);
 
-  const initialRootStyle = useMemo(
-    () => props.rootRef.current.style.cssText,
-    []
-  );
+  // const initialRootStyle = useMemo(
+  //   () => props.rootRef.current.style.cssText,
+  //   []
+  // );
 
-  const handleChangeComplete = (
-    colorCategory: string,
-    colorValue: string & CSSStyleRule
-  ) => {
-    setCustomProperties(`--color-${colorCategory}`, colorValue);
+  // const handleChangeComplete = (
+  //   colorCategory: string,
+  //   colorValue: string & CSSStyleRule
+  // ) => {
+  //   setCustomProperties(`--color-${colorCategory}`, colorValue);
 
-    const prevColorStates = { ...colorStates };
-    const currentColorState = prevColorStates[colorCategory];
+  //   const prevColorStates = { ...colorStates };
+  //   const currentColorState = prevColorStates[colorCategory];
 
-    const newColorStates = {
-      ...prevColorStates,
-      [colorCategory]: {
-        ...currentColorState,
-        value: colorValue,
-        hasChanged: true,
-      },
-    };
+  //   const newColorStates = {
+  //     ...prevColorStates,
+  //     [colorCategory]: {
+  //       ...currentColorState,
+  //       value: colorValue,
+  //       hasChanged: true,
+  //     },
+  //   };
 
-    for (const category in newColorStates) {
-      if (
-        category === colorCategory ||
-        newColorStates[category].hasChanged ||
-        !newColorStates[category].isRelative
-      ) {
-        continue;
-      } else {
-        const value = computeCustomProperties(`--color-${category}`);
+  //   for (const category in newColorStates) {
+  //     if (
+  //       category === colorCategory ||
+  //       newColorStates[category].hasChanged ||
+  //       !newColorStates[category].isRelative
+  //     ) {
+  //       continue;
+  //     } else {
+  //       const value = computeCustomProperties(`--color-${category}`);
 
-        newColorStates[category] = {
-          ...newColorStates[category],
-          value: toHex(new Color(value!)),
-        };
-      }
-    }
+  //       newColorStates[category] = {
+  //         ...newColorStates[category],
+  //         value: toHex(new Color(value!)),
+  //       };
+  //     }
+  //   }
 
-    setColorStates(newColorStates);
-  };
+  //   setColorStates(newColorStates);
+  // };
 
-  const handleReset = () => {
-    setColorStates(colors);
-    resetStyles(initialRootStyle);
-  };
+  // const handleReset = () => {
+  //   setColorStates(colors);
+  //   resetStyles(initialRootStyle);
+  // };
 
   return (
-    <>
+    <div className={styles.main}>
       <header className={styles.header}>
         <h2 className={styles.middle}>Calculated color palette</h2>
         <ResetButton
@@ -90,20 +87,21 @@ export const ColorPickers = (props: { rootRef?: any; colors?: any }) => {
           className={`${styles.end} ${styles.reset}`}
         />
       </header>
-      <div className={styles.main}>
-        {Object.keys(colors).map((color) => {
-          return (
-            <ColorPicker
-              key={color}
-              colorCategory={color}
-              colorState={colorStates[color]}
-              label={`${_.startCase(color)} color:`}
-              handleChange={handleChangeComplete}
-            />
-          );
-        })}
-      </div>
-    </>
+      <>
+        {context &&
+          Object.keys(colors).map((color) => {
+            return (
+              <ColorPicker
+                key={color}
+                colorCategory={color}
+                colorState={colorStates[color]}
+                label={`${_.startCase(color)} color:`}
+                handleChange={handleChangeComplete}
+              />
+            );
+          })}
+      </>
+    </div>
   );
 };
 
@@ -160,34 +158,23 @@ const ColorPicker = ({
   colorState,
   handleChange,
   label = "",
-  onComplete = false,
 }) => {
   const [currentColor, setCurrentColor] = useState(colorState.value);
-
-  const callbackDelay = 50; // in ms
-  const useOptimizedChange = onComplete
-    ? _.debounce(
-        (colorCategory, currentColor) => {
-          handleChange(colorCategory, currentColor);
-        },
-        callbackDelay,
-        { leading: false, trailing: true }
-      )
-    : _.throttle(
-        (colorCategory, currentColor) => {
-          handleChange(colorCategory, currentColor);
-        },
-        callbackDelay,
-        { leading: false, trailing: true }
-      );
+  const [isPrimaryChange, setIsPrimaryChange] = useState(false);
 
   const onChange = (e: { target: { value: any } }) => {
     const newColor = e.target.value;
-    useOptimizedChange(colorCategory, newColor);
+    setIsPrimaryChange(true);
+    // useOptimizedChange(colorCategory, newColor);
+    handleChange(colorCategory, currentColor);
+    setCurrentColor(newColor);
   };
 
   useEffect(() => {
-    setCurrentColor(colorState.value);
+    if (!isPrimaryChange) {
+      setCurrentColor(colorState.value);
+    }
+    setIsPrimaryChange(false);
   }, [colorState.value]);
 
   return (

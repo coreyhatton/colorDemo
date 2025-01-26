@@ -3,13 +3,23 @@ import { useRef } from "react";
 import "./App.css";
 import { ColorBlocks, ColorPickers } from "./components";
 import { initializeColors } from "./utils";
+import { ColorPickerProvider } from "./colorContext";
 
 export const App = () => {
   const rootRef = useRef<HTMLElement>(document.documentElement);
 
   const categories = ["primary", "secondary", "tertiary", "accent"];
+  const cssColorProperties = {
+    primary: "--color-primary",
+    secondary: "--color-secondary",
+    tertiary: "--color-tertiary",
+    accent: "--color-accent",
+  };
 
-  const initialColors = initializeColors(categories);
+  const { initialColors, parsedTextColors } = initializeColors({
+    categories,
+    cssColorProperties,
+  });
 
   return (
     <>
@@ -20,9 +30,11 @@ export const App = () => {
           css
         </p>
       </header>
-      <main className="card">
-        <ColorPickers colors={initialColors} rootRef={rootRef} />
-        <ColorBlocks categories={categories} />
+      <main className="app">
+        <ColorPickerProvider {...{ initialColors, parsedTextColors, rootRef }}>
+          <ColorPickers colors={initialColors} rootRef={rootRef} />
+          <ColorBlocks />
+        </ColorPickerProvider>
         <p>Change the colors using the above color pickers</p>
       </main>
       <footer className="footer">

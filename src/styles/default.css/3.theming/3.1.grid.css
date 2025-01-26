@@ -1,0 +1,63 @@
+@layer theming.grid {
+  /* --------- BODY LAYOUT --------- */
+  body {
+    /* Root container or body acts as a container for our page layout. */
+    display: grid;
+    gap: var(--gutter, 1rem);
+    min-block-size: 100dvh;
+    column-gap: 0;
+
+    --full: 100dvw;
+    --content: 1200px;
+
+    /* grid-template-columns:
+      [full-start header-start footer-start] 1fr
+      [content-start] min(var(--content), 88dvw)
+      [content-end] 1fr
+      [header-end footer-end full-end]; */
+
+    grid-template-columns:
+      [full-start header-start footer-start] max(8dvw, calc(50dvw - var(--content) / 2))
+      [content-start] repeat(12, [col-start] minmax(0, 1fr) [col-end])
+      [content-end] max(8dvw, calc(50dvw - var(--content) / 2))
+      [header-end footer-end full-end];
+
+    grid-template-rows:
+      [header-start] auto
+      [header-end content-start] 1fr
+      [content-end footer-start] auto
+      [footer-end];
+
+    :where(header, footer):not(main header, main footer) {
+      grid-column: full;
+
+      &:has(*:only-child) {
+        display: contents;
+        > *:only-child {
+          grid-column: content;
+        }
+      }
+    }
+
+    main,
+    :where(header, footer):not(main header, main footer) {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: full;
+      row-gap: var(--gutter);
+
+      > * {
+        grid-column: content;
+        /* grid-template-columns: subgrid; */
+      }
+    }
+
+    main:has(> *:only-child) {
+      display: contents;
+
+      > *:only-child {
+        grid-column: full;
+      }
+    }
+  }
+}

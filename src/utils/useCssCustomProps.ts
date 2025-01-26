@@ -248,7 +248,10 @@ export const useCssCustomProperties = (
         _cssProp = `--${cssProperty}`;
       }
       const initialValue = getProperties(_cssProp);
-      const colorValue = useRelativeDomColor(initialValue, inColorSpace);
+      const colorValue = useRelativeDomColor({
+        value: initialValue,
+        inColorSpace,
+      });
 
       // adds a temporary element to the DOM to compute the color using browser apis
       const computingElement = document.createElement("div");
@@ -265,7 +268,7 @@ export const useCssCustomProperties = (
             ? toHex(colorObj)
             : colorObj.to(inColorSpace).toString();
         } catch {
-          console.error(
+          console.warn(
             `Unable to convert ${computedProperty} to ${inColorSpace}. Returning original value.`
           );
           return computedProperty;
@@ -274,9 +277,10 @@ export const useCssCustomProperties = (
 
       const convertedProperty =
         !inColorSpace || computedProperty.includes(inColorSpace)
-          ? computedProperty
+          ? computedProperty // Skips conversion if not necessary
           : convertToSpace(computedProperty);
 
+      // removes the temporary element from the DOM
       document.body.removeChild(computingElement);
 
       return convertedProperty;

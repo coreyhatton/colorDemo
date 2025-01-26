@@ -1,25 +1,4 @@
 @layer theming.core {
-  /* Set up the page canvas using a 3-column grid, where the outer cols are gutters. */
-  body {
-    background: var(--bg-base, Canvas);
-    color: var(--text-base, CanvasText);
-
-    display: grid;
-    grid-template:
-      "header header header" max-content
-      "gutter-start body gutter-end" 1fr
-      "footer footer footer" max-content / var(--page-centered-grid);
-    gap: var(--gutter, 1rem);
-
-    /* Default to content width column. */
-    & > *:not(script, style, template, link, [hidden]) {
-      grid-column: var(--page-content-column);
-      gap: var(--gutter, 1rem);
-    }
-  }
-}
-
-@layer theming.core {
   /* Prevent long strings from overflowing container */
   p,
   h1,

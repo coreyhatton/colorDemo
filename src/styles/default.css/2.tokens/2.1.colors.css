@@ -137,8 +137,8 @@
     --bg-disabled: var(--color-gray-l1);
 
     /* Additional colors */
-    --text-muted: oklch(from var(--color-contrast) var(--l1-calc));
-    --text-disabled: oklch(from var(--color-contrast) var(--l2-calc));
+    --text-muted: oklch(from var(--color-contrast) var(--l2-calc));
+    --text-disabled: oklch(from var(--color-contrast) var(--l3-calc));
     --text-disabled-light: oklch(from var(--color-contrast) var(--l3-calc));
     --text-placeholder: oklch(from var(--color-contrast) var(--l3-calc));
 

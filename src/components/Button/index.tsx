@@ -4,7 +4,8 @@ import {
   useFocusRing,
   type AriaButtonOptions,
 } from "react-aria";
-import React, { useRef } from "react";
+import { useRef } from "react";
+import filterInvalidDOMProps from "filter-invalid-dom-props";
 import clsx from "clsx";
 import styles from "./Button.module.css";
 
@@ -82,6 +83,8 @@ export const Button = ({
 
   const styleProps = { background, ...style };
 
+  const validDomProps = filterInvalidDOMProps(mergedProps);
+
   const setClassNamesByVariant = () => {
     let classNames = "";
 
@@ -119,7 +122,7 @@ export const Button = ({
     <button
       // React-aria's useButton hook doesn't extend our style, children or
       // className props so we need to add them manually
-      {...mergedProps}
+      {...{ ...buttonProps, ...validDomProps }}
       style={styleProps}
       className={buttonClassName}
       ref={ref}

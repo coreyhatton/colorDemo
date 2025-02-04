@@ -1,5 +1,4 @@
 import Color from "colorjs.io";
-import React, { useCallback, useEffect, useState } from "react";
 import { toHex, useRelativeDomColor } from "./colorUtils";
 
 /**
@@ -7,18 +6,14 @@ import { toHex, useRelativeDomColor } from "./colorUtils";
  */
 export interface CssCustomPropertiesObject {
   /**
-   * Tuple containing the current CSS style declaration and a dispatcher
-   * to update the style state.
-   */
-  state: [
-    CSSStyleDeclaration,
-    React.Dispatch<React.SetStateAction<CSSStyleDeclaration>>
-  ];
-
-  /**
    * The root HTML element from which the CSS custom properties are derived.
    */
   root: HTMLElement;
+
+  /**
+   * The computed styles of the root HTML element.
+   */
+  rootStyle: CSSStyleDeclaration;
 
   /**
    * Sets a CSS custom property to a specified value.
@@ -48,9 +43,14 @@ export interface CssCustomPropertiesObject {
    *
    * @param property - The color property to compute.
    * @param inColorSpace - The color space to use for computation.
+   * @param asColorObject - Whether to return the computed color as a Color object.
    * @returns The computed color property value.
    */
-  computeColorProperty: (property: string, inColorSpace?: string) => string;
+  computeColorProperty: (
+    property: string,
+    inColorSpace?: string,
+    asColorObject?: boolean
+  ) => string | Color;
 
   /**
    * Resets the CSS custom properties to their initial styles.
@@ -61,105 +61,39 @@ export interface CssCustomPropertiesObject {
 }
 
 /**
- * A hook that returns the current CSS custom properties
+ * A function that returns the current CSS custom properties
  * of the given HTMLElement or ref (or the document root by default).
  *
- * The state is updated whenever the component is re-rendered, and is
- * initially set by reading the computed styles of the root element.
+ * The properties are read from the computed styles of the root element.
  *
  * @param rootRef - the HTMLElement to read the custom properties from.
  */
 export const useCssCustomProperties = (
-  rootRef: React.RefObject<HTMLElement> | HTMLElement = document.documentElement
+  rootRef: HTMLElement | React.RefObject<HTMLElement> = document.documentElement
 ): CssCustomPropertiesObject => {
-  const [rootStyle, setRootStyle] = useState(null as any);
-
   const root =
     rootRef instanceof HTMLElement
       ? rootRef
       : rootRef?.current || document.documentElement;
 
-  // Set initial state on component mount
-  useEffect(() => {
-    if (!!window) {
-      const styleDecl = window.getComputedStyle(root);
-
-      const _rootStyles = {};
-
-      // Collect custom properties from the root element's inline styles
-      for (const [key, value] of styleDecl) {
-        if (key.startsWith("--")) {
-          _rootStyles[key] = value;
-        }
-      }
-      setRootStyle(_rootStyles);
-    }
-  }, []);
+  const rootStyle = window.getComputedStyle(root);
 
   /**
    * Function to set CSS custom properties on the root element.
    * Accepts either an array of property-value pairs or individual property-value arguments.
    */
-  const setProperties = useCallback(
-    (...args) => {
-      if (!root) {
-        return null;
-      }
-      if (
-        args.length === 1 &&
-        typeof args[0] === "object" &&
-        Array.isArray(args[0])
-      ) {
-        return args[0].forEach((arg) => setProperties(...arg));
-      } else if (args.length === 2 || args.length === 3) {
-        const [cssProperty, value, prefix = ""] = args;
-
-        let _cssProp = "";
-
-        if (cssProperty.startsWith("var(")) {
-          _cssProp = cssProperty.slice(4, -1);
-        } else if (cssProperty.startsWith("--")) {
-          _cssProp = cssProperty;
-        } else {
-          _cssProp = `--${cssProperty}`;
-        }
-        const prefixedProperty = _cssProp.startsWith(`--${prefix}`)
-          ? _cssProp
-          : _cssProp.startsWith("--")
-          ? `--${prefix}-${_cssProp.slice(2)}`
-          : `--${prefix}-${_cssProp}`;
-
-        setRootStyle({
-          ...rootStyle,
-          [_cssProp]: value,
-        });
-
-        root.style.setProperty(prefixedProperty, value);
-      } else {
-        throw new Error("Two or three args expected.");
-      }
-    },
-    [rootStyle, setRootStyle]
-  );
-
-  /**
-   * Function to get CSS custom properties from the root element.
-   * If a specific property is provided, its value is returned.
-   * Otherwise, all custom properties are returned.
-   */
-  const getProperties = useCallback(
-    (cssProperty?: any) => {
-      if (cssProperty === "all" || cssProperty === "*" || !cssProperty) {
-        return getAllProperties();
-      }
-
-      if (
-        typeof cssProperty === "object" &&
-        Array.isArray(cssProperty) &&
-        cssProperty.length > 0
-      ) {
-        return cssProperty.map((p: any) => getProperties(p));
-      }
+  const setProperties = (...args) => {
+    if (!root) {
+      return null;
+    }
+    if (
+      args.length === 1 &&
+      typeof args[0] === "object" &&
+      Array.isArray(args[0])
+    ) {
+      return args[0].forEach((arg) => setProperties(...arg));
+    } else if (args.length === 2 || args.length === 3) {
+      const [cssProperty, value, prefix = ""] = args;
 
       let _cssProp = "";
 
@@ -170,24 +104,59 @@ export const useCssCustomProperties = (
       } else {
         _cssProp = `--${cssProperty}`;
       }
+      const prefixedProperty = _cssProp.startsWith(`--${prefix}`)
+        ? _cssProp
+        : _cssProp.startsWith("--")
+        ? `--${prefix}-${_cssProp.slice(2)}`
+        : `--${prefix}-${_cssProp}`;
 
-      if (rootStyle && rootStyle[_cssProp]) {
-        return rootStyle[cssProperty];
-      }
+      root.style.setProperty(prefixedProperty, value);
+    } else {
+      throw new Error("Two or three args expected.");
+    }
+  };
 
-      const computedProperty = window
-        .getComputedStyle(document.documentElement)
-        .getPropertyValue(cssProperty);
+  /**
+   * Function to get CSS custom properties from the root element.
+   * If a specific property is provided, its value is returned.
+   * Otherwise, all custom properties are returned.
+   */
+  const getProperties = (cssProperty?: any) => {
+    if (cssProperty === "all" || cssProperty === "*" || !cssProperty) {
+      return getAllProperties();
+    }
 
-      return computedProperty;
-    },
-    [rootStyle]
-  );
+    if (
+      typeof cssProperty === "object" &&
+      Array.isArray(cssProperty) &&
+      cssProperty.length > 0
+    ) {
+      return cssProperty.map((p: any) => getProperties(p));
+    }
+
+    let _cssProp = "";
+
+    if (cssProperty.startsWith("var(")) {
+      _cssProp = cssProperty.slice(4, -1);
+    } else if (cssProperty.startsWith("--")) {
+      _cssProp = cssProperty;
+    } else {
+      _cssProp = `--${cssProperty}`;
+    }
+
+    if (rootStyle[_cssProp]) {
+      return rootStyle[_cssProp];
+    }
+
+    const computedProperty = rootStyle.getPropertyValue(cssProperty);
+
+    return computedProperty;
+  };
 
   /**
    * Function to retrieve all CSS custom properties from the root element.
    */
-  const getAllProperties = useCallback(() => {
+  const getAllProperties = () => {
     // use CSSOM api where available - supported by Chromium-based browsers
     // @see https://developer.mozilla.org/en-US/docs/Web/API/Element/computedStyleMap
     if (!!root.computedStyleMap) {
@@ -215,98 +184,93 @@ export const useCssCustomProperties = (
       return styles;
     } else {
       // firefox-specific workaround
-      const style = getComputedStyle(root);
       const styleObject = {};
-      for (let index = 0; index < style.length; index++) {
-        const property = style[index];
+      for (let index = 0; index < rootStyle.length; index++) {
+        const property = rootStyle[index];
 
         if (property.startsWith("--")) {
-          const value = style.getPropertyValue(property);
+          const value = rootStyle.getPropertyValue(property);
           styleObject[property] = value;
         }
       }
 
       return styleObject;
     }
-  }, [rootStyle]);
+  };
 
   /**
    * Function to compute a CSS color property in the desired color space.
    */
-  const computeColorProperty = useCallback(
-    (cssProperty: string, inColorSpace: string = "rgb") => {
-      const property = "color";
+  const computeColorProperty = (
+    cssProperty: string,
+    inColorSpace: string = "rgb",
+    asColorObject: boolean = false
+  ) => {
+    const property = "color";
 
-      // Converts format to '--xxx' format if necessary
-      let _cssProp = "";
+    // Converts format to '--xxx' format if necessary
+    let _cssProp = "";
 
-      if (cssProperty.startsWith("var(")) {
-        _cssProp = cssProperty.slice(4, -1);
-      } else if (cssProperty.startsWith("--")) {
-        _cssProp = cssProperty;
-      } else {
-        _cssProp = `--${cssProperty}`;
+    if (cssProperty.startsWith("var(")) {
+      _cssProp = cssProperty.slice(4, -1);
+    } else if (cssProperty.startsWith("--")) {
+      _cssProp = cssProperty;
+    } else {
+      _cssProp = `--${cssProperty}`;
+    }
+    const initialValue = getProperties(_cssProp);
+    const colorValue = useRelativeDomColor({
+      value: initialValue,
+      inColorSpace,
+    });
+
+    // adds a temporary element to the DOM to compute the color using browser apis
+    const computingElement = document.createElement("div");
+    document.body.appendChild(computingElement);
+    computingElement.style.setProperty(property, colorValue);
+    const computedProperty = window
+      .getComputedStyle(computingElement)
+      .getPropertyValue(property);
+
+    const convertToSpace = (inColorSpace: string) => {
+      try {
+        const colorObj = new Color(computedProperty);
+        return inColorSpace === "hex"
+          ? toHex(colorObj)
+          : colorObj.to(inColorSpace).toString();
+      } catch {
+        console.warn(
+          `Unable to convert ${computedProperty} to ${inColorSpace}. Returning original value.`
+        );
+        return computedProperty;
       }
-      const initialValue = getProperties(_cssProp);
-      const colorValue = useRelativeDomColor({
-        value: initialValue,
-        inColorSpace,
-      });
+    };
 
-      // adds a temporary element to the DOM to compute the color using browser apis
-      const computingElement = document.createElement("div");
-      document.body.appendChild(computingElement);
-      computingElement.style.setProperty(property, colorValue);
-      const computedProperty = window
-        .getComputedStyle(computingElement)
-        .getPropertyValue(property);
+    const convertedProperty =
+      !inColorSpace || computedProperty.includes(inColorSpace)
+        ? computedProperty // Skips conversion if not necessary
+        : convertToSpace(inColorSpace);
 
-      const convertToSpace = (inColorSpace: string) => {
-        try {
-          const colorObj = new Color(computedProperty);
-          return inColorSpace === "hex"
-            ? toHex(colorObj)
-            : colorObj.to(inColorSpace).toString();
-        } catch {
-          console.warn(
-            `Unable to convert ${computedProperty} to ${inColorSpace}. Returning original value.`
-          );
-          return computedProperty;
-        }
-      };
+    // removes the temporary element from the DOM
+    document.body.removeChild(computingElement);
 
-      const convertedProperty =
-        !inColorSpace || computedProperty.includes(inColorSpace)
-          ? computedProperty // Skips conversion if not necessary
-          : convertToSpace(computedProperty);
-
-      // removes the temporary element from the DOM
-      document.body.removeChild(computingElement);
-
-      return convertedProperty;
-    },
-    [rootStyle]
-  );
+    return asColorObject ? new Color(convertedProperty) : convertedProperty;
+  };
 
   /**
    * Function to reset the root element to its initial state.
    */
-  const resetToInitial = useCallback(
-    (initialStyle: CSSStyleDeclaration | String) => {
-      setRootStyle(initialStyle || {});
-
-      root.style.cssText = (initialStyle || "").toString();
-    },
-    [rootStyle, setRootStyle]
-  );
+  const resetToInitial = (initialStyle: CSSStyleDeclaration | String) => {
+    root.style.cssText = (initialStyle || "").toString();
+  };
 
   /**
    * An object containing the state, root element, and functions to manipulate the root element's
    * CSS custom properties.
    */
   return {
-    state: [rootStyle, setRootStyle],
     root,
+    rootStyle,
     setProperties,
     getProperties,
     getAllProperties,

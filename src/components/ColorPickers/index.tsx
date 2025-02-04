@@ -1,10 +1,29 @@
-import { use, useEffect, useMemo, useState } from "react";
-import _, { set } from "lodash";
+import {
+  memo,
+  useMemo,
+  useState,
+  useRef,
+  useDeferredValue,
+  useCallback,
+  useEffect,
+} from "react";
+import _ from "lodash";
+import { ArrowCounterClockwise } from "@phosphor-icons/react";
+import Color, { type ColorTypes } from "colorjs.io";
+
+import { Button } from "../Button";
+import { toHex, useCssCustomProperties } from "@/src/utils";
+import {
+  useColorStateDispatch,
+  initialRootStyle,
+  useColorStates,
+  getParsedTextColors,
+  getInitialStates,
+  useCalculatingState,
+} from "@/src/ColorContext";
 
 import styles from "./ColorPickers.module.css";
-import { Button } from "../Button";
-import { ArrowCounterClockwise } from "@phosphor-icons/react";
-import { ColorPickerContext } from "../../colorContext";
+import type { JSX } from "react/jsx-runtime";
 
 /**
  * Component for rendering a collection of color pickers to manipulate CSS custom properties.
@@ -12,101 +31,213 @@ import { ColorPickerContext } from "../../colorContext";
  * The component also includes a reset feature to restore the original styles.
  *
  * @param props - Component properties.
- * @param props.rootRef - Optional reference to the root element for CSS property manipulation.
- * @param props.colors - Optional mapping of color categories to their initial values and states.
- *
  * @returns The ColorPickers component.
  */
-export const ColorPickers = (props: { rootRef?: any; colors?: any }) => {
-  const { colors } = props;
+export const ColorPickers = memo(() => {
+  const colorStates = useColorStates();
+  const { setIsChangingColor } = useCalculatingState();
 
-  const context = use(ColorPickerContext);
-  const { colorStates, handleChangeComplete, handleReset } = context ?? {};
+  const dispatch = useColorStateDispatch();
 
-  // const {
-  //   setProperties: setCustomProperties,
-  //   computeColorProperty: computeCustomProperties,
-  //   resetToInitial: resetStyles,
-  // } = useCssCustomProperties(props.rootRef);
+  const deferredStates = useDeferredValue(colorStates);
 
-  // const initialRootStyle = useMemo(
-  //   () => props.rootRef.current.style.cssText,
-  //   []
-  // );
+  const initialColors = getInitialStates();
+  const textColors = getParsedTextColors();
 
-  // const handleChangeComplete = (
-  //   colorCategory: string,
-  //   colorValue: string & CSSStyleRule
-  // ) => {
-  //   setCustomProperties(`--color-${colorCategory}`, colorValue);
+  const { computeColorProperty } = useCssCustomProperties();
 
-  //   const prevColorStates = { ...colorStates };
-  //   const currentColorState = prevColorStates[colorCategory];
+  const handleColorChange = useCallback(
+    (deferredColor: any, category: string | number) => {
+      dispatch({
+        type: "SET_COLOR",
+        category,
+        payload: {
+          value: deferredColor,
+          variants: setVariants(deferredStates[category].variants, textColors),
+        },
+      });
+    },
+    [textColors, dispatch]
+  );
 
-  //   const newColorStates = {
-  //     ...prevColorStates,
-  //     [colorCategory]: {
-  //       ...currentColorState,
-  //       value: colorValue,
-  //       hasChanged: true,
-  //     },
-  //   };
+  const handleRelativeChange = useCallback(
+    (currentCategory: any) => {
+      const relativeColors = Object.entries(deferredStates).filter(([key]) => {
+        return deferredStates[key].isRelativeTo === currentCategory;
+      });
 
-  //   for (const category in newColorStates) {
-  //     if (
-  //       category === colorCategory ||
-  //       newColorStates[category].hasChanged ||
-  //       !newColorStates[category].isRelative
-  //     ) {
-  //       continue;
-  //     } else {
-  //       const value = computeCustomProperties(`--color-${category}`);
+      const payload = Object.fromEntries(
+        relativeColors.map(([category, state]) => {
+          return [
+            category,
+            {
+              value: computeColorProperty(`--color-${category}`, "hex"),
+              variants: setVariants(state.variants, textColors),
+            },
+          ];
+        })
+      );
 
-  //       newColorStates[category] = {
-  //         ...newColorStates[category],
-  //         value: toHex(new Color(value!)),
-  //       };
-  //     }
-  //   }
+      dispatch({
+        type: "SET_ALL_COLORS",
+        payload,
+      });
+    },
+    [textColors, dispatch, deferredStates]
+  );
 
-  //   setColorStates(newColorStates);
-  // };
+  const debouncedChangeComplete = _.debounce((deferredColor, category) => {
+    handleColorChange(deferredColor, category);
+    handleRelativeChange(category);
 
-  // const handleReset = () => {
-  //   setColorStates(colors);
-  //   resetStyles(initialRootStyle);
-  // };
+    return setIsChangingColor(null);
+  }, 300);
 
   return (
     <div className={styles.main}>
       <header className={styles.header}>
         <h2 className={styles.middle}>Calculated color palette</h2>
         <ResetButton
-          handlePress={handleReset}
           icon={ArrowCounterClockwise}
+          initialColors={initialColors}
           className={`${styles.end} ${styles.reset}`}
         />
       </header>
-      <>
-        {context &&
-          Object.keys(colors).map((color) => {
-            return (
-              <ColorPicker
-                key={color}
-                colorCategory={color}
-                colorState={colorStates[color]}
-                label={`${_.startCase(color)} color:`}
-                handleChange={handleChangeComplete}
-              />
-            );
-          })}
-      </>
+      {initialColors &&
+        Object.keys(initialColors).map((colorCategory) => {
+          return (
+            <ColorPicker
+              key={colorCategory}
+              category={colorCategory}
+              colorValue={colorStates[colorCategory].value}
+              textColors={textColors}
+              colorStates={deferredStates}
+              handleChangeComplete={debouncedChangeComplete}
+            />
+          );
+        })}
+
+      <></>
     </div>
   );
+});
+
+const ColorPicker = memo(
+  ({
+    category,
+    colorValue,
+    textColors,
+    colorStates,
+    handleChangeComplete,
+    ...props
+  }: any) => {
+    const cssVar = `var(--color-${category})`;
+    const { setIsChangingColor } = useCalculatingState();
+
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    const [currentColor, setCurrentColor] = useState(colorValue);
+    const deferredColor = useDeferredValue(currentColor);
+
+    const { setProperties, computeColorProperty } = useCssCustomProperties();
+
+    const onChange = (e: { target: { value: any } }) => {
+      const newColor = e.target.value;
+      setIsChangingColor(category);
+
+      setCurrentColor(newColor);
+      setProperties(cssVar, newColor);
+    };
+
+    useEffect(() => {
+      if (colorStates[category].value !== currentColor) {
+        setCurrentColor(colorStates[category].value);
+      }
+    }, [colorStates[category].value]);
+
+    // useEffect(() => {
+    //   const computedColor = computeColorProperty(cssVar, "hex");
+    //   if (inputRef.current) {
+    //     inputRef.current.value = computedColor as string;
+    //   }
+    // }, [document.documentElement.style.cssText]);
+
+    const onChangeComplete = useCallback(
+      (deferredColor: any, category: any) => {
+        handleChangeComplete(deferredColor, category);
+        return () => {
+          handleChangeComplete.cancel();
+        };
+      },
+      [handleChangeComplete, cssVar, deferredColor, category]
+    );
+
+    // contained in effect so it only triggers when our deferred value changes
+    useEffect(() => {
+      onChangeComplete(deferredColor, category);
+    }, [deferredColor, category]);
+
+    return (
+      <div {...props} className={`${styles.pickers} ${props.className}`}>
+        <label htmlFor={`${category}-input`}>{category}</label>
+        <input
+          id={`${category}-input`}
+          type="color"
+          value={currentColor}
+          onChange={onChange}
+          ref={inputRef}
+        />
+      </div>
+    );
+  }
+);
+
+const setVariants = (variants: any[], textColors: { base: ColorTypes }) => {
+  const { computeColorProperty } = useCssCustomProperties();
+
+  const newVariants = variants.map(
+    (variant: {
+      [x: string]: any;
+      cssVar: any;
+      contrastingTextColor: any;
+      computedValue: any;
+    }) => {
+      const { cssVar, contrastingTextColor, computedValue, ...rest } = variant;
+      const computedProperty = computeColorProperty(
+        cssVar,
+        "oklch",
+        true
+      ) as Color;
+
+      const newTextColor =
+        computedProperty instanceof Color && textColors
+          ? computedProperty.contrastLstar(textColors.base) > 50
+            ? "var(--text-base)"
+            : "var(--text-contrast)"
+          : contrastingTextColor;
+
+      const newValue =
+        computedProperty instanceof Color
+          ? computedProperty.toString({ precision: 2 })
+          : computedValue;
+
+      return {
+        ...rest,
+        cssVar,
+        computedValue: newValue,
+        hexValue: toHex(computedProperty),
+        contrastingTextColor: newTextColor,
+      };
+    }
+  );
+
+  return newVariants;
 };
 
-const ResetButton = ({ handlePress, icon, ...props }) => {
+const ResetButton = memo(({ icon, initialColors, ...props }: any) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const dispatch = useColorStateDispatch();
+  const { resetToInitial } = useCssCustomProperties();
 
   const iconProps = useMemo(
     () => ({ className: `${isAnimating ? styles.animate : ""}` }),
@@ -121,13 +252,24 @@ const ResetButton = ({ handlePress, icon, ...props }) => {
     setIsAnimating(false);
   };
 
-  const renderIcon = (Icon, iconProps) => {
+  const renderIcon = (
+    Icon: JSX.IntrinsicAttributes,
+    iconProps: JSX.IntrinsicAttributes
+  ) => {
     return <Icon {...Icon.props} {...iconProps} />;
+  };
+
+  const handlePress = () => {
+    dispatch({
+      type: "RESET",
+    });
+    resetToInitial(initialRootStyle);
   };
 
   return (
     <Button
       {...props}
+      onPress={handlePress}
       variant="reset"
       onMouseEnter={handleMouseOver}
       onAnimationEnd={handleAnimationEnd}
@@ -136,58 +278,6 @@ const ResetButton = ({ handlePress, icon, ...props }) => {
       {renderIcon(icon, iconProps)}
     </Button>
   );
-};
-
-/**
- * Custom controlled component for picking colors.
- * Uses the native color picker in the browser.
- *
- * @prop {string} colorCategory - The category of the color to be picked.
- * @prop {string} colorState.value - The current value of the color.
- * @prop {function} handleChange - The callback to be called when the color
- * changes. It takes two arguments: the color category and the new color value.
- * @prop {string} [label=""] - The label to be displayed next to the color input.
- * @prop {boolean} [onComplete=false] - If true, the handleChange callback will
- * be called only when the user finishes picking the color. If false, the
- * callback will be called each time the user changes the color.
- *
- * @returns {ReactElement} - The ColorPicker component.
- */
-const ColorPicker = ({
-  colorCategory,
-  colorState,
-  handleChange,
-  label = "",
-}) => {
-  const [currentColor, setCurrentColor] = useState(colorState.value);
-  const [isPrimaryChange, setIsPrimaryChange] = useState(false);
-
-  const onChange = (e: { target: { value: any } }) => {
-    const newColor = e.target.value;
-    setIsPrimaryChange(true);
-    // useOptimizedChange(colorCategory, newColor);
-    handleChange(colorCategory, currentColor);
-    setCurrentColor(newColor);
-  };
-
-  useEffect(() => {
-    if (!isPrimaryChange) {
-      setCurrentColor(colorState.value);
-    }
-    setIsPrimaryChange(false);
-  }, [colorState.value]);
-
-  return (
-    <div className={styles.pickers}>
-      {label && <label htmlFor="{`${colorCategory}-input`}">{label}</label>}
-      <input
-        id={`${colorCategory}-input`}
-        type="color"
-        value={currentColor}
-        onChange={onChange}
-      />
-    </div>
-  );
-};
+});
 
 export default ColorPickers;

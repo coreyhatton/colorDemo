@@ -1,26 +1,8 @@
-import { useRef } from "react";
-
 import "./App.css";
 import { ColorBlocks, ColorPickers } from "./components";
-import { initializeColors } from "./utils";
-import { ColorPickerProvider } from "./colorContext";
+import { ColorStateProvider } from "./ColorContext";
 
 export const App = () => {
-  const rootRef = useRef<HTMLElement>(document.documentElement);
-
-  const categories = ["primary", "secondary", "tertiary", "accent"];
-  const cssColorProperties = {
-    primary: "--color-primary",
-    secondary: "--color-secondary",
-    tertiary: "--color-tertiary",
-    accent: "--color-accent",
-  };
-
-  const { initialColors, parsedTextColors } = initializeColors({
-    categories,
-    cssColorProperties,
-  });
-
   return (
     <>
       <header className="header">
@@ -31,14 +13,14 @@ export const App = () => {
         </p>
       </header>
       <main className="app">
-        <ColorPickerProvider {...{ initialColors, parsedTextColors, rootRef }}>
-          <ColorPickers colors={initialColors} rootRef={rootRef} />
+        <ColorStateProvider>
+          <ColorPickers />
           <ColorBlocks />
-        </ColorPickerProvider>
+        </ColorStateProvider>
         <p>Change the colors using the above color pickers</p>
       </main>
       <footer className="footer">
-        <p className="read-the-docs">Made for fun by Corey Hatton</p>
+        <p className="read-the-docs">Made by Corey Hatton</p>
       </footer>
     </>
   );

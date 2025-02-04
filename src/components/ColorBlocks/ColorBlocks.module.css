@@ -49,12 +49,21 @@
   .blockName {
     white-space: nowrap;
     padding: var(--spacing-xs);
+    opacity: 1;
+    transition: all 300ms ease-out;
   }
 
   .blockInfo {
     font-size: var(--fontsize-sm);
     line-height: var(--line-height-condensed);
-    color: var(--text-muted);
+    color: var(--text-base);
     opacity: 0.8;
+
+    transition: all 300ms ease-out;
+
+    &.loading {
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
   }
 }

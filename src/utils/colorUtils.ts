@@ -25,11 +25,16 @@ interface UseRelativeDomColorOptions {
  * If the hex string is longer than 7 characters (i.e. it includes alpha), it is truncated
  * to 7 characters.
  *
- * @param colorObj - The Color object to convert to a hex string
+ * @param color - The Color object to convert to a hex string
  * @returns A hex string for the color in the sRGB color space
  */
-const toHex = (colorObj: Color) => {
-  const srgb = colorObj.to("srgb");
+const toHex = (color: Color | string) => {
+  let _color = color;
+  if (typeof _color === "string") {
+    _color = new Color(_color);
+  }
+
+  const srgb = _color.to("srgb");
   const hex = srgb.toString({ format: "hex", collapse: false });
   return hex.length > 7 ? hex.slice(0, 7) : hex;
 };
@@ -114,8 +119,19 @@ interface InitializeColorsOptions {
   textColorProperties?: { [key: string]: string };
 }
 
+const parseTextColors = (textColorProperties) => {
+  const obj = { base: {} as any, contrast: {} as any };
+  const { computeColorProperty } = useCssCustomProperties();
+
+  Object.entries(textColorProperties).map(([key, value]: any) => {
+    const colorValue = computeColorProperty(value);
+    obj[key] = new Color(colorValue);
+  });
+
+  return obj;
+};
+
 const initializeColors = ({
-  categories = ["primary", "secondary", "tertiary", "accent"],
   cssColorProperties = {
     primary: "--color-primary",
     secondary: "--color-secondary",
@@ -127,8 +143,9 @@ const initializeColors = ({
     contrast: "--text-contrast",
   },
 }: InitializeColorsOptions) => {
-  const { getAllProperties, computeColorProperty } = useCssCustomProperties();
+  const categories = Object.keys(cssColorProperties);
 
+  const { getAllProperties, computeColorProperty } = useCssCustomProperties();
   const customPropertyValues = getAllProperties();
 
   const parseTextColors = () => {
@@ -185,6 +202,7 @@ const initializeColors = ({
       return {
         cssVar: token,
         computedValue: computedProperty.to("oklch").toString({ precision: 2 }),
+        hexValue: toHex(computedProperty),
         contrastingTextColor: contrastingTextColor,
       };
     });
@@ -193,6 +211,7 @@ const initializeColors = ({
       [category]: {
         ...obj[category],
         isRelative: true,
+        isRelativeTo: categories[0],
         hasChanged: false,
         value: toHex(obj[category]),
         variants,
@@ -202,8 +221,20 @@ const initializeColors = ({
 
   const initialColors = Object.assign({}, ...parsedColors);
 
-  return { initialColors, parsedTextColors };
+  const colors = {
+    current: initialColors,
+    __initial: initialColors,
+    __parsedTextColors: parsedTextColors,
+  };
+
+  return colors;
 };
 
-export { toHex, useRelativeDomColor, initializeColors, getContrastingText };
+export {
+  toHex,
+  useRelativeDomColor,
+  initializeColors,
+  getContrastingText,
+  parseTextColors,
+};
 export type { ColorState, ColorStateCategory };

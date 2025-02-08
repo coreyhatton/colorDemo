@@ -8,6 +8,7 @@
     /* The user-submitted colors used to create our color scheme. */
     /* Uncomment and add your brand colors here where relevant. */
 
+    /* Basic black, white and gray tokens */
     --color-base: #ffffff; /* REQUIRED */
     --color-contrast: #121212 /* REQUIRED */;
     --color-gray-l2: #f1f1f1;
@@ -173,8 +174,8 @@
     --shadow-base: oklch(from var(--color-base) calc(l - 0.2 * var(--darken-calc)) c h);
     --shadow-contrast: oklch(from var(--color-contrast) calc(l - 0.2 * var(--darken-calc)) c h);
 
-    --shadow-elevation-1: 0px 1px 3px var(--shadow-base), 0px 1px 2px var(--shadow-contrast);
-    --shadow: 0px 0px 2px var(--shadow-base), 0px 0px 1px var(--shadow-contrast);
+    --shadow: 4px 4px 9px var(--color-gray-l1), 0px 0px 1px var(--color-base);
+    --drop-shadow: 4px 4px 9px var(--color-gray-l1);
 
     --focus-outline: var(--color-secondary);
   }

@@ -1,4 +1,11 @@
-import { createContext, use, useReducer, useRef, useState } from "react";
+import {
+  createContext,
+  use,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { initializeColors } from "./utils";
 
 interface ColorContextType {
@@ -22,7 +29,7 @@ const ColorDispatchContext = createContext<React.Dispatch<any>>(() => {});
  * @returns The ColorStateProvider component.
  */
 export const ColorStateProvider = ({ children }) => {
-  const [colorStates, dispatch] = useReducer(
+  const [states, dispatch] = useReducer(
     stateReducer,
     { cssColorProperties },
     initializeColors
@@ -36,6 +43,12 @@ export const ColorStateProvider = ({ children }) => {
   };
 
   const rootRef = useRef(document.documentElement);
+
+  const colorStates = useMemo(() => {
+    return {
+      ...states,
+    };
+  }, [states]);
 
   return (
     <ColorContext.Provider

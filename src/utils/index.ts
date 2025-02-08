@@ -1,8 +1,2 @@
 export { useCssCustomProperties } from "./useCssCustomProps";
-export {
-  toHex,
-  useRelativeDomColor,
-  initializeColors,
-  getContrastingText,
-  parseTextColors,
-} from "./colorUtils";
+export { toHex, useRelativeDomColor, initializeColors } from "./colorUtils";

@@ -16,6 +16,14 @@
       [content-end] 1fr
       [header-end footer-end full-end]; */
 
+    --grid-columns: [full-start header-start footer-start] max(8dvw, calc(50dvw - var(--content) / 2)) [content-start]
+      repeat(12, [col-start] minmax(0, 1fr) [col-end]) [content-end] max(8dvw, calc(50dvw - var(--content) / 2))
+      [header-end footer-end full-end];
+
+    --grid-rows: [header-start] auto [header-end content-start] 1fr [content-end footer-start] auto [footer-end];
+
+    --smaller-columns: 2 / -2;
+
     grid-template-columns:
       [full-start header-start footer-start] max(8dvw, calc(50dvw - var(--content) / 2))
       [content-start] repeat(12, [col-start] minmax(0, 1fr) [col-end])

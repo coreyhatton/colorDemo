@@ -20,6 +20,10 @@
   }
 }
 
+.colorInput {
+  transition: background-color 300ms ease-out;
+}
+
 @container contents (inline-size < calc(4 * 22ch )) {
   .main {
     grid-template-columns: repeat(2, minmax(min(100cqw, 25ch), 1fr));

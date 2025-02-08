@@ -34,13 +34,6 @@
     font: inherit;
   }
 
-  /* Prepare svg to be manipulated */
-  use,
-  svg,
-  path {
-    fill: inherit;
-  }
-
   /* Improve default media behaviour. */
   img,
   picture,

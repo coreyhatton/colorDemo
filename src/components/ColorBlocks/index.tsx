@@ -80,17 +80,22 @@ interface ColorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
  *   @param props.currentTextColor - The text color to be used within the block.
  *   @param props.isCalculating - A boolean indicating whether the color is being recalculated.
  *   @param props.children - Any child elements to be rendered inside the block.
- *   @param props.otherProps - Any additional properties to be applied to the div element.
+ *   @param props.wrapperProps - Any additional properties to be applied to the div element.
  *
  * @returns A JSX element representing a color block with a specified background and text color.
  */
 const ColorBlock = (props: ColorBlockProps) => {
-  const { cssVar, className, currentTextColor, isCalculating, ...otherProps } =
-    props;
+  const {
+    cssVar,
+    className,
+    currentTextColor,
+    isCalculating,
+    ...wrapperProps
+  } = props;
 
   return (
     <div
-      {...otherProps}
+      {...wrapperProps}
       id={`${cssVar.slice(6, -1)}`}
       className={`${styles.blocks} ${className}`}
     >

@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: ["es2020", "chrome120", "firefox117", "edge120", "safari17.2"],
+    target: ["esNext", "chrome120", "firefox117", "edge120", "safari17.2"],
   },
   base: "/colorDemo/", // Set the base URL for your GitHub Pages site
   plugins: [react(), tsconfigPaths()],

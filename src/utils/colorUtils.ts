@@ -9,10 +9,7 @@ interface ColorStateCategory {
 }
 
 interface ColorState {
-  primary: ColorStateCategory;
-  secondary: ColorStateCategory;
-  tertiary: ColorStateCategory;
-  accent: ColorStateCategory;
+  [key: string]: ColorStateCategory;
 }
 
 interface UseRelativeDomColorOptions {
@@ -87,30 +84,6 @@ const useRelativeDomColor = ({
     console.warn("Unknown color space: ", inColorSpace);
     return value;
   }
-};
-
-const getContrastingText = (
-  colorCurrent: string | Color,
-  bgColorObj: Color,
-  colorVariables: {
-    current: string;
-    alt: string;
-  }
-) => {
-  let colorObjCurrent =
-    typeof colorCurrent === "string" ? new Color(colorCurrent) : colorCurrent;
-
-  let recommendedColor = colorVariables.current;
-
-  const contrast = colorObjCurrent.contrast(bgColorObj, "Lstar");
-
-  if (contrast < 30) {
-    recommendedColor = colorVariables.alt;
-  }
-
-  // console.log("contrast: " + contrast);
-
-  return { lStarValue: contrast, recommendedColor };
 };
 
 interface InitializeColorsOptions {
@@ -230,11 +203,5 @@ const initializeColors = ({
   return colors;
 };
 
-export {
-  toHex,
-  useRelativeDomColor,
-  initializeColors,
-  getContrastingText,
-  parseTextColors,
-};
+export { toHex, useRelativeDomColor, initializeColors };
 export type { ColorState, ColorStateCategory };

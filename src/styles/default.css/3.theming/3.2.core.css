@@ -230,14 +230,6 @@
     p {
       font-size: var(--fontsize-sm);
     }
-
-    > :first-child {
-      margin-block-start: var(--spacing-md);
-    }
-
-    > :last-child {
-      margin-block-end: var(--spacing-sm);
-    }
   }
 
   /* GROUPING CONTENT */

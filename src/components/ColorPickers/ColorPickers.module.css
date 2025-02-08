@@ -1,6 +1,6 @@
 .main {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(20ch, calc(25% - var(--gutter-sm))), 1fr));
+  grid-template-columns: var(--contents-grid-cols);
   gap: inherit;
 }
 
@@ -8,6 +8,7 @@
   display: grid;
   grid-column: -1 / 1;
   align-items: center;
+  grid-template-columns: subgrid;
 
   .middle {
     place-self: center;
@@ -20,6 +21,10 @@
     grid-column: -1;
     grid-row: 1;
   }
+
+  p {
+    grid-column: content;
+  }
 }
 
 .reset {
@@ -29,6 +34,13 @@
 }
 
 .pickers {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--gutter-sm);
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
+  justify-items: center;
+  grid-column: 1/-1;
 }
 
 /* .reset::before {
@@ -73,9 +85,30 @@
   }
 }
 
-.pickers {
+/* .pickers {
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
+} */
+/* 
+@container contents (inline-size < calc(4 * 22ch )) {
+  .pickers {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(min(100cqw, 25ch), 1fr));
+  }
+} */
+
+@container contents (inline-size < calc(2 * 32ch)) {
+  .pickers {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(4, minmax(min(100cqw, 10ch), 1fr));
+  }
+}
+
+@container contents (inline-size < calc(4 * 12ch)) {
+  .pickers {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(min(100cqw, 10ch), 1fr));
+  }
 }

@@ -1,33 +1,39 @@
 @layer theming.grid {
   /* --------- BODY LAYOUT --------- */
   body {
-    /* Root container or body acts as a container for our page layout. */
     display: grid;
     gap: var(--gutter, 1rem);
     min-block-size: 100dvh;
     column-gap: 0;
 
-    --full: 100dvw;
-    --content: 1200px;
+    container: body / inline-size;
 
-    /* grid-template-columns:
-      [full-start header-start footer-start] 1fr
-      [content-start] min(var(--content), 88dvw)
-      [content-end] 1fr
-      [header-end footer-end full-end]; */
-
-    --grid-columns: [full-start header-start footer-start] max(8dvw, calc(50dvw - var(--content) / 2)) [content-start]
-      repeat(12, [col-start] minmax(0, 1fr) [col-end]) [content-end] max(8dvw, calc(50dvw - var(--content) / 2))
-      [header-end footer-end full-end];
+    --content-size: 1200px; /* NOTE: Must match with min-width specified in the below media query. */
 
     --grid-rows: [header-start] auto [header-end content-start] 1fr [content-end footer-start] auto [footer-end];
 
-    --smaller-columns: 2 / -2;
+    --grid-page-gutters: max(8dvw, calc(50dvw - var(--content-size) / 2));
+
+    --wide-template-columns: [wide-start col-start] minmax(0, 1fr) [col-end content-start col-start]
+      repeat(10, [col-start] minmax(0, 1fr) [col-end]) [content-end col-start] minmax(0, 1fr) [col-end wide-end];
+    --content-template-columns: [wide-start content-start] repeat(10, [col-start] minmax(0, 1fr) [col-end]) [content-end
+      wide-end];
+
+    --template-columns: var(--content-template-columns);
+
+    /* Expand wide columns out from content columns with large screen width */
+    /* The min-width specified here should match with the --content-size property. */
+    @media screen and (min-width: 1200px) {
+      & {
+        --template-columns: var(--wide-template-columns);
+      }
+    }
 
     grid-template-columns:
-      [full-start header-start footer-start] max(8dvw, calc(50dvw - var(--content) / 2))
-      [content-start] repeat(12, [col-start] minmax(0, 1fr) [col-end])
-      [content-end] max(8dvw, calc(50dvw - var(--content) / 2))
+      [full-start header-start footer-start]
+      var(--grid-page-gutters)
+      var(--template-columns)
+      var(--grid-page-gutters)
       [header-end footer-end full-end];
 
     grid-template-rows:
@@ -35,6 +41,23 @@
       [header-end content-start] 1fr
       [content-end footer-start] auto
       [footer-end];
+
+    /* 
+     * TODO DEV: Implement once css style queries are baseline supported 
+     * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries#browser_compatibility  
+     */
+
+    /* @container style(--size: wide) {
+      & {
+        grid-template-columns:
+          [full-start header-start footer-start] max(8dvw, calc(50dvw - var(--content-size) / 2))
+          [wide-start col-start] minmax(0, 1fr) [col-end content-start]
+          repeat(10, [col-start] minmax(0, 1fr) [col-end])
+          [content-end col-start] minmax(0, 1fr) [col-end wide-end]
+          max(8dvw, calc(50dvw - var(--content-size) / 2))
+          [header-end footer-end full-end];
+      }
+    } */
 
     :where(header, footer):not(main header, main footer) {
       grid-column: full;
@@ -55,8 +78,7 @@
       row-gap: var(--gutter);
 
       > * {
-        grid-column: content;
-        /* grid-template-columns: subgrid; */
+        grid-column: content; /* or wide */
       }
     }
 

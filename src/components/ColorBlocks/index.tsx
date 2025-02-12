@@ -1,9 +1,34 @@
-import { memo, useDeferredValue } from "react";
+import { memo, useDeferredValue, useRef, useState } from "react";
+import {
+  useCalculatingState,
+  useColorStates,
+  useInfoState,
+} from "@/src/ColorContext";
+
 import styles from "./ColorBlocks.module.css";
-import { useCalculatingState, useColorStates } from "@/src/ColorContext";
+import { useToggleState } from "react-stately";
+import { useFocusRing, useSwitch, VisuallyHidden } from "react-aria";
+import { Icon } from "@iconify/react";
 
 export interface ColorBlocksProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
+  isMainColor?: boolean;
+  mainColorFormat?: string;
+}
+
+export interface ColorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
+  cssVar: string;
+  className?: string;
+  currentTextColor: string;
+  isMainColor: boolean;
+  isCalculating: boolean;
+}
+
+export interface ColorInfoProps
+  extends React.HTMLAttributes<HTMLParagraphElement> {
+  colorState: any;
+  isCalculating: boolean;
+  isVisible: boolean;
 }
 
 /**
@@ -12,64 +37,81 @@ export interface ColorBlocksProps extends React.HTMLAttributes<HTMLDivElement> {
  *
  * @param props - An object containing the following properties:
  *   @param props.className - Additional class names for styling the component.
- *
- * @returns A React element representing a color block with a specified background and text color.
+ *   @param props.mainColorFormat - Format for identifying our primary color block. Should match to CSS variable format e.g. "--color-"
+ *   @param props.isMainColor - A boolean indicating whether the block is the main color.
  */
-export const ColorBlocks = (props: ColorBlocksProps) => {
-  // color blocks for each category
+export const ColorBlocks = memo(
+  ({
+    isMainColor = false,
+    className = "",
+    mainColorFormat = "",
+    ...props
+  }: ColorBlocksProps) => {
+    const colorStates = useColorStates();
+    const deferredColorStates = useDeferredValue(colorStates);
 
-  const colorStates = useColorStates();
-  const deferredColorStates = useDeferredValue(colorStates);
-  const { isChangingColor } = useCalculatingState();
+    const { isChangingColor } = useCalculatingState();
+    const { isShown, setIsShown } = useInfoState();
 
-  return (
-    <section {...props} className={`${styles.main} ${props.className}`}>
-      {colorStates &&
-        Object.entries(colorStates).map(([category, state]: [string, any]) => {
-          return (
-            <div key={category} className={styles.variants}>
-              {state.variants.map(({ cssVar }) => {
-                return (
-                  <ColorBlock
-                    key={`${category}-${cssVar.slice(6, -1)}`}
-                    cssVar={cssVar}
-                    currentTextColor={
-                      deferredColorStates[category].variants.find(
-                        (variant) => variant.cssVar === cssVar
-                      ).contrastingTextColor
-                    }
-                    isCalculating={
-                      [state.isRelativeTo, category].includes(isChangingColor)
-                        ? true
-                        : false
-                    }
-                  >
-                    <ColorInfo
-                      colorState={deferredColorStates[category].variants.find(
-                        (variant) => variant.cssVar === cssVar
-                      )}
-                      isCalculating={
-                        [state.isRelativeTo, category].includes(isChangingColor)
-                          ? true
-                          : false
-                      }
-                    />
-                  </ColorBlock>
-                );
-              })}
-            </div>
-          );
-        })}
-    </section>
-  );
-};
-
-interface ColorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
-  cssVar: string;
-  className?: string;
-  currentTextColor: string;
-  isCalculating: boolean;
-}
+    return (
+      <section {...props} className={`${styles.main} ${className}`}>
+        <InfoSwitch
+          isDisabled={isChangingColor}
+          style={{ gridColumn: "1 / -1", justifySelf: "flex-end" }}
+          onChange={() => setIsShown(!isShown)}
+        >
+          Show color info?
+        </InfoSwitch>
+        {colorStates &&
+          Object.entries(colorStates).map(
+            ([category, state]: [string, any]) => {
+              return (
+                <div key={category} className={styles.variants}>
+                  {state.variants.map(({ cssVar }) => {
+                    return (
+                      <ColorBlock
+                        key={`${category}-${cssVar.slice(6, -1)}`}
+                        cssVar={cssVar}
+                        currentTextColor={
+                          deferredColorStates[category].variants.find(
+                            (variant) => variant.cssVar === cssVar
+                          ).contrastingTextColor
+                        }
+                        isCalculating={
+                          [state.isRelativeTo, category].includes(
+                            isChangingColor
+                          )
+                            ? true
+                            : false
+                        }
+                        isMainColor={cssVar.includes(mainColorFormat)}
+                      >
+                        <ColorInfo
+                          colorState={deferredColorStates[
+                            category
+                          ].variants.find(
+                            (variant) => variant.cssVar === cssVar
+                          )}
+                          isVisible={isShown}
+                          isCalculating={
+                            [state.isRelativeTo, category].includes(
+                              isChangingColor
+                            )
+                              ? true
+                              : false
+                          }
+                        />
+                      </ColorBlock>
+                    );
+                  })}
+                </div>
+              );
+            }
+          )}
+      </section>
+    );
+  }
+);
 
 /**
  * A functional component that renders a styled color block.
@@ -78,47 +120,51 @@ interface ColorBlockProps extends React.HTMLAttributes<HTMLDivElement> {
  *   @param props.cssVar - A CSS variable representing the background color.
  *   @param props.className - Additional class names for styling.
  *   @param props.currentTextColor - The text color to be used within the block.
+ *   @param props.isMainColor - A boolean indicating whether the block is the main color.
  *   @param props.isCalculating - A boolean indicating whether the color is being recalculated.
  *   @param props.children - Any child elements to be rendered inside the block.
  *   @param props.wrapperProps - Any additional properties to be applied to the div element.
- *
- * @returns A JSX element representing a color block with a specified background and text color.
  */
-const ColorBlock = (props: ColorBlockProps) => {
+const ColorBlock = memo((props: ColorBlockProps) => {
   const {
     cssVar,
     className,
     currentTextColor,
+    isMainColor,
     isCalculating,
     ...wrapperProps
   } = props;
 
-  return (
-    <div
-      {...wrapperProps}
-      id={`${cssVar.slice(6, -1)}`}
-      className={`${styles.blocks} ${className}`}
-    >
-      <p
-        className={`${styles.blockName}`}
-        style={{
-          backgroundColor: cssVar,
-          color: isCalculating
-            ? `color-mix(in oklab, ${currentTextColor}, transparent 30%)`
-            : currentTextColor,
-        }}
-      >
-        {cssVar}
-      </p>
-      {props.children}
-    </div>
-  );
-};
+  const styleProperty = {
+    ["--block-color"]: cssVar,
+  } as React.CSSProperties;
 
-interface ColorInfoProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  colorState: any;
-  isCalculating: boolean;
-}
+  return (
+    <>
+      <div
+        {...wrapperProps}
+        id={`${cssVar.slice(6, -1)}`}
+        className={`${styles.blocks} ${className || ""} ${
+          isMainColor ? styles.mainBlock : ""
+        }`}
+        style={{ ...styleProperty, ...props.style }}
+      >
+        <p
+          className={`${styles.blockName}`}
+          style={{
+            backgroundColor: cssVar,
+            color: isCalculating
+              ? `color-mix(in oklab, ${currentTextColor}, transparent 30%)`
+              : currentTextColor,
+          }}
+        >
+          {cssVar}
+        </p>
+        {props.children}
+      </div>
+    </>
+  );
+});
 
 /**
  * A functional component that renders a single paragraph element with the computed value
@@ -129,20 +175,79 @@ interface ColorInfoProps extends React.HTMLAttributes<HTMLParagraphElement> {
  *   @param props.isCalculating - A boolean indicating whether the corresponding color is currently being recalculated.
  *   @param props.className - Additional class names for styling the component.
  *   @param props.children - A React element or elements to be rendered within the paragraph element.
- *
- * @returns A JSX element representing a paragraph element with the computed value of a CSS custom property.
  */
 const ColorInfo = (props: ColorInfoProps) => {
-  const { colorState, isCalculating, ...otherProps } = props;
+  const { colorState, isCalculating, isVisible, ...otherProps } = props;
 
-  const classNames = `${styles.blockInfo} ${
-    isCalculating ? styles.loading : ""
-  } ${props.className || ""}`;
+  const classNames = `
+  ${styles.blockInfo} 
+  ${isCalculating ? styles.loading : ""} 
+  ${isVisible ? styles.visible : styles.hidden}
+  ${props.className || ""}
+  `;
 
   return (
-    <p className={classNames} {...otherProps}>
+    <div className={classNames} {...otherProps}>
       {colorState.computedValue}
-    </p>
+    </div>
+  );
+};
+
+/**
+ * A functional component that renders a switch element to toggle the visibility of the color information blocks.
+ *
+ * @param props - An object containing the following properties:
+ *   @param props.children - A React element or elements to be rendered as the label content.
+ *   @param props.isDisabled - A boolean indicating whether the switch is disabled.
+ *   @param props.style - An object containing additional CSS styles to be applied to the label element.
+ *   @param props.className - Additional class names for styling the component.
+ */
+const InfoSwitch = ({ ...props }) => {
+  const { isShown } = useInfoState();
+
+  const state = useToggleState({ ...props, isSelected: isShown });
+  const ref = useRef(null);
+
+  const { inputProps, labelProps } = useSwitch(props, state, ref);
+  const { isFocusVisible, focusProps } = useFocusRing();
+
+  return (
+    <label
+      {...labelProps}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        fontSize: "var(--fontsize-xs)",
+        color: "var(--text-muted)",
+        gap: "var(--gutter-xs)",
+        opacity: props.isDisabled ? 0.4 : 1,
+        lineHeight: "1",
+        paddingInlineEnd: "var(--spacing-sm)",
+        ...props.style,
+      }}
+      title="Toggle color info block visibility"
+    >
+      {props.children}
+      <VisuallyHidden>
+        <input {...inputProps} {...focusProps} ref={ref} />
+      </VisuallyHidden>
+      {isFocusVisible && <span className={styles.focusRing} />}
+      {isShown ? (
+        <Icon
+          icon="ri:toggle-fill"
+          height={"1.5em"}
+          style={{ color: "var(--color-accent)" }}
+          aria-hidden="true"
+        />
+      ) : (
+        <Icon
+          icon="ri:toggle-line"
+          height={"1.5em"}
+          style={{ color: "var(--color-accent)" }}
+          aria-hidden="true"
+        />
+      )}
+    </label>
   );
 };
 

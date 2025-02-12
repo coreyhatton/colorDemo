@@ -8,12 +8,8 @@ import React, {
   useEffect,
 } from "react";
 import _ from "lodash";
-import {
-  ArrowCounterClockwise,
-  type Icon,
-  type IconProps,
-} from "@phosphor-icons/react";
 import Color, { type ColorTypes } from "colorjs.io";
+import { Icon } from "@iconify/react";
 
 import { Button } from "../Button";
 import { toHex, useCssCustomProperties } from "@/src/utils";
@@ -36,7 +32,12 @@ import styles from "./ColorPickers.module.css";
  * @param props - Component properties.
  * @returns The ColorPickers component.
  */
-export const ColorPickers = (...props) => {
+export interface ColorPickersProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
+
+export const ColorPickers = ({ className, ...props }: ColorPickersProps) => {
   const colorStates = useColorStates();
   const deferredStates = useDeferredValue(colorStates);
 
@@ -100,17 +101,16 @@ export const ColorPickers = (...props) => {
   );
 
   return (
-    <div className={styles.main}>
+    <div {...props} className={`${styles.main} ${className}`}>
       <header className={styles.header}>
         <h2 className={styles.middle}>Calculated color palette</h2>
         <ResetButton
-          icon={ArrowCounterClockwise}
+          icon={"ph:arrow-counter-clockwise"}
           initialColors={initialColors}
           className={`${styles.end} ${styles.reset}`}
         />
-        <p>Change the colors using the above color pickers</p>
       </header>
-      <div {...props} className={`${styles.pickers} ${props.className ?? ""}`}>
+      <div className={`${styles.pickers}`}>
         {initialColors &&
           Object.keys(initialColors).map((colorCategory) => {
             return (
@@ -218,6 +218,7 @@ const ColorPicker = ({
         onChange={onChange}
         ref={inputRef}
         className={styles.colorInput}
+        title={`Change ${category} color`}
       />
     </>
   );
@@ -296,13 +297,6 @@ const ResetButton = memo(({ icon, initialColors, ...props }: any) => {
     setIsAnimating(false);
   };
 
-  const renderIcon = (
-    Icon: Icon,
-    iconProps: React.HTMLProps<SVGSVGElement> & IconProps
-  ) => {
-    return <Icon {...iconProps} />;
-  };
-
   const handlePress = () => {
     dispatch({
       type: "RESET",
@@ -319,7 +313,7 @@ const ResetButton = memo(({ icon, initialColors, ...props }: any) => {
       onAnimationEnd={handleAnimationEnd}
       title="Reset colors to initial state"
     >
-      {renderIcon(icon, iconProps)}
+      <Icon icon={icon} {...iconProps} />
     </Button>
   );
 });

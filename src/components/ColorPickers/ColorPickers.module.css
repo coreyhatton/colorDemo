@@ -28,8 +28,6 @@
 }
 
 .reset {
-  --primary-glow: radial-gradient(var(--primary-l3), rgba(1, 65, 255, 0));
-  --secondary-glow: radial-gradient(rgba(1, 65, 255, 0), var(--primary-l3));
   position: relative;
 }
 
@@ -43,37 +41,8 @@
   grid-column: 1/-1;
 }
 
-/* .reset::before {
-  background: var(--secondary-glow);
-  border-radius: 50%;
-  width: 80%;
-  height: 80%;
-}
-
-.reset::after {
-  background: var(--primary-glow);
-  width: 80%;
-  height: 80%;
-  z-index: -1;
-}
-
-.reset::before,
-.reset::after {
-  --blur: 6px;
-  content: "";
-  left: 50%;
-  position: absolute;
-  filter: blur(var(--blur));
-  transform: translateZ(0);
-} */
-
 .animate {
   animation: spin 1s ease-out forwards;
-
-  & ::before,
-  & ::after {
-    --blur: 35px;
-  }
 }
 
 @keyframes spin {
@@ -84,20 +53,6 @@
     rotate: 0deg;
   }
 }
-
-/* .pickers {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-} */
-/* 
-@container contents (inline-size < calc(4 * 22ch )) {
-  .pickers {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(2, minmax(min(100cqw, 25ch), 1fr));
-  }
-} */
 
 @container contents (inline-size < calc(2 * 32ch)) {
   .pickers {

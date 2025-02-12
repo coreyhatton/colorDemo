@@ -1,11 +1,107 @@
+.main {
+  container: contents / inline-size;
+
+  display: grid;
+  grid-template-columns: var(--template-columns);
+  grid-column: wide;
+
+  text-align: center;
+
+  > * {
+    grid-column: content;
+  }
+
+  .app {
+    grid-column: wide;
+  }
+
+  hr {
+    grid-column: wide;
+  }
+}
+
 .info {
   display: grid;
   text-align: start;
+
+  --colorBlock-color: /* Defined in ~/App.tsx */ ;
+
+  --colorBar-width: var(--spacing-md);
+
+  > .infoBlock {
+    display: grid;
+    grid-template-columns: [color-start] var(--colorBar-width) [color-end content-start] 1fr [content-end];
+    /* grid-template-rows: [rows-start] repeat(auto-fit, minmax(max-content, 100%)) [rows-end]; */
+    grid-auto-rows: minmax(max-content, 100%);
+
+    gap: var(--gutter);
+    row-gap: var(--gutter-sm);
+
+    position: relative;
+
+    padding-block: var(--spacing-md);
+    padding-block-end: var(--spacing-lg);
+    padding-inline-end: var(--spacing-md);
+
+    background-color: var(--color-base);
+    border-radius: var(--border-radius);
+
+    box-shadow: 0px 0px 1ch 0.5ex color-mix(in oklab, var(--colorBlock-color), transparent 95%);
+
+    h2 {
+      margin: unset;
+    }
+
+    > * {
+      grid-column: content;
+      align-self: flex-start;
+    }
+
+    > ul {
+      padding-inline-start: unset;
+      min-block-size: 100%;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      block-size: 100%;
+      inline-size: var(--colorBar-width);
+
+      background-color: var(--colorBlock-color, var(--color-primary));
+    }
+
+    &::after {
+      opacity: 0;
+      transition: all 1000ms ease-out;
+      content: "";
+      position: absolute;
+      block-size: 80%;
+      inline-size: 100%;
+      z-index: -1;
+
+      background: repeating-conic-gradient(var(--colorBlock-color) 0 13%, transparent 0 40%),
+        repeating-conic-gradient(transparent 0 19%, var(--colorBlock-color) 0 19%) 50% / 10% 20%,
+        repeating-conic-gradient(transparent 0 39%, var(--colorBlock-color) 0 59%) 50% / 70% 70%,
+        radial-gradient(var(--colorBlock-color) 100%, transparent 0), var(--color-base);
+      background-repeat: no-repeat;
+
+      filter: blur(6dvw) contrast(200%);
+      box-shadow: 0 0 0 12px var(--color-base);
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
+  }
 }
 
-.note {
+.faq {
   display: flex;
-  gap: var(--gutter-sm);
+  column-gap: var(--gutter-sm);
+  flex-wrap: wrap;
+
+  min-height: 100%;
 
   align-items: center;
 
@@ -13,9 +109,9 @@
     padding: var(--spacing-sm);
     border-radius: var(--border-radius);
     border: 1px solid var(--color-border);
-    box-shadow: var(--shadow);
-    block-size: 100%;
+    box-shadow: var(--shadow-elevation);
     align-content: center;
+    place-self: stretch;
   }
 
   svg {
@@ -27,11 +123,11 @@
   }
 
   :nth-child(2) {
-    flex: 1 0 var(--gutter-md);
+    flex: 0 0 var(--spacing-md);
   }
 
   :nth-child(3) {
-    flex: 1 1 40%;
+    flex: 1 0 24ch;
   }
 }
 
@@ -53,4 +149,10 @@
   gap: var(--gutter-sm);
   grid-column: content;
   place-items: center;
+}
+
+.todos {
+  color: var(--secondary-d2);
+  background-color: color-mix(in oklab, var(--secondary-l4), transparent 70%);
+  padding: 1rem;
 }

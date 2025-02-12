@@ -1,8 +1,10 @@
-# default.css: A Custom CSS Framework for Theming
+# [[WIP]] default.css: A Custom CSS Framework for Theming
 
 default.css is a classless CSS framework that allows you to quickly theme your project. It provides a custom color system that gives you full control over the colors used in your design.
 
 ## Color Tokens
+
+[![View color tokens src](https://img.shields.io/badge/-View%20color%20tokens%20src-teal)](src/styles/default.css/2.tokens/2.1.colors.css)
 
 The color system uses [insert link] css relative color syntax to create a complimentary color palette out of your primary color.  
 The color tokens are designed to be flexible and customizable. You can adjust their values in the [src/styles/default.css/2.tokens/2.1.colors.css] file to create the desired color scheme for your project.

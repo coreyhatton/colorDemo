@@ -13,6 +13,7 @@ interface ColorContextType {
   __initial: any;
   __parsedTextColors: any;
   calculatingState: any;
+  infoState: any;
   rootRef: any;
 }
 
@@ -37,9 +38,16 @@ export const ColorStateProvider = ({ children }) => {
 
   const [isChangingColor, setIsChangingColor] = useState<string | null>(null);
 
+  const [isShown, setIsShown] = useState(true);
+
   const calculatingState = {
     isChangingColor,
     setIsChangingColor,
+  };
+
+  const infoState = {
+    isShown,
+    setIsShown,
   };
 
   const rootRef = useRef(document.documentElement);
@@ -52,7 +60,7 @@ export const ColorStateProvider = ({ children }) => {
 
   return (
     <ColorContext.Provider
-      value={{ ...colorStates, calculatingState, rootRef }}
+      value={{ ...colorStates, calculatingState, infoState, rootRef }}
     >
       <ColorDispatchContext.Provider value={dispatch}>
         {children}
@@ -133,6 +141,10 @@ export const useColorStates = () => {
 
 export const useCalculatingState = () => {
   return use(ColorContext)?.calculatingState ?? {};
+};
+
+export const useInfoState = () => {
+  return use(ColorContext)?.infoState ?? {};
 };
 
 export const useRootRef = () => {

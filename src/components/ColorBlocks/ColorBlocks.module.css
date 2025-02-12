@@ -7,8 +7,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(25cqw - var(--gutter-sm)), 1fr));
   grid-auto-flow: row;
-  grid-auto-rows: 1fr;
   gap: var(--gutter-sm);
+  background: var(--bg-base);
 
   > * {
     text-align: center;
@@ -39,35 +39,114 @@
 .variants {
   display: grid;
   gap: inherit;
+  position: relative;
+
+  &::before {
+    content: "Darker  ↼ ⇀ Lighter";
+    writing-mode: sideways-lr;
+    font-size: var(--fontsize-xs);
+    position: absolute;
+    top: 0;
+    left: calc(-1 * var(--gutter));
+    z-index: -1;
+
+    height: 100%;
+  }
 }
 
 .blocks {
+  --block-color: /* defined in src/components/ColorBlocks/index.tsx */ ;
+
   display: grid;
-  row-gap: var(--gutter-xs);
   color: var(--text-contrast);
-  align-content: center;
+  align-items: center;
+
+  position: relative;
 
   font-size: var(--fontsize-md);
   line-height: var(--line-height-condensed);
 
+  border: 2px solid var(--block-color);
+  background-color: color-mix(in oklab, var(--block-color), transparent 90%);
+
+  .blockName,
+  .blockInfo {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .blockName {
-    white-space: nowrap;
     padding: var(--spacing-xs);
     opacity: 1;
-    transition: all 300ms ease-out;
+    white-space: nowrap;
+    font-style: italic;
+    transition: all 1000ms ease-out;
+
+    .mainBlock & {
+      font-weight: bold;
+      font-style: normal;
+    }
   }
 
   .blockInfo {
     font-size: var(--fontsize-sm);
-    line-height: var(--line-height-condensed);
+    line-height: 1;
     color: var(--text-base);
     opacity: 0.8;
+    block-size: 1lh;
+    box-sizing: content-box;
+    padding-block: var(--spacing-sm);
 
-    transition: all 300ms ease-out;
+    transition: color 300ms ease-in-out, opacity 400ms ease-in-out;
 
     &.loading {
       color: var(--text-muted);
-      opacity: 0.7;
+      opacity: 0.6;
     }
+
+    &.visible {
+      animation: showInfo ease-in 350ms both;
+    }
+
+    &.hidden {
+      animation: hideInfo ease-in 350ms both;
+    }
+  }
+}
+
+@keyframes showInfo {
+  from {
+    transform: rotateX(90deg);
+    translate: 0 -50%;
+    block-size: 0;
+    padding-block: 0;
+    box-sizing: border-box;
+    opacity: 0.2;
+  }
+  to {
+    transform: rotateX(0deg);
+    translate: 0 0;
+    opacity: 0.8;
+    block-size: 1lh;
+    box-sizing: content-box;
+    padding-block: var(--spacing-sm);
+  }
+}
+
+@keyframes hideInfo {
+  from {
+    transform: rotateX(0deg);
+    translate: 0 0;
+    block-size: 1lh;
+    box-sizing: content-box;
+    padding-block: var(--spacing-sm);
+  }
+  to {
+    transform: rotateX(90deg);
+    translate: 0 -50%;
+    opacity: 0.2;
+    block-size: 0;
+    box-sizing: border-box;
+    padding-block: 0;
   }
 }

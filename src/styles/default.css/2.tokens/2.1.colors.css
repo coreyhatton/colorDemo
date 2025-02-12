@@ -42,15 +42,14 @@
     --c-min: 0.04;
     --c-max: max(calc(c - 0.01), 0.01); /* Ensure c is positive */
 
-    --exp: 1.3; /* 1 is linear. > 1 reduces the changes between l1-l3. 0 < 1 will widen the change between l1-l3 */
+    --exp: 1; /* 1 is linear. > 1 reduces the changes between l1-l3. 0 < 1 will widen the change between l1-l3 */
 
     /* --x1-calc: l c h; where l = lightness and 0.1 < l < 1.0, c = color and 0.01 < c < 0.37, and h = hue and 0 < h < 360.  */
     /* l[step] means lighten by [step] steps e.g. l1 = 1 step lighter. */
     /* d[step] means darken by [step] steps e.g. d3 = 3 steps darker. */
 
     /* 
-    *  Where
-    *  l_final = l_initial + x^(exponent) * l_max - l_initial / 4^(exponent)
+    * @see https://docs.google.com/spreadsheets/d/1il4B_REEfI4hOUPJj9WifLjFszr-Jv7ixOB8vBZDee0/edit?usp=sharing
     */
     --lightness-calc-l1: calc(l + pow(1, var(--exp)) * (var(--l-max) - l) / pow(4, var(--exp)));
     --lightness-calc-l2: calc(l + pow(2, var(--exp)) * (var(--l-max) - l) / pow(4, var(--exp)));
@@ -72,6 +71,7 @@
     --chroma-calc-d3: calc(c + pow(3, var(--exp)) * (var(--c-max) - c) / pow(4, var(--exp)));
     --chroma-calc-d4: calc(c + pow(4, var(--exp)) * (var(--c-max) - c) / pow(4, var(--exp)));
 
+    /* L C H values to plug into oklch(from var(--xxx) l c h) relative color syntax  */
     --l1-calc: var(--lightness-calc-l1) var(--chroma-calc-l1) h;
     --l2-calc: var(--lightness-calc-l2) var(--chroma-calc-l2) h;
     --l3-calc: var(--lightness-calc-l3) var(--chroma-calc-l3) h;
@@ -176,6 +176,8 @@
 
     --shadow: 4px 4px 9px var(--color-gray-l1), 0px 0px 1px var(--color-base);
     --drop-shadow: 4px 4px 9px var(--color-gray-l1);
+
+    --shadow-elevation: 4px 4px 9px var(--color-gray-l2), 0px 0px 1px var(--color-base);
 
     --focus-outline: var(--color-secondary);
   }

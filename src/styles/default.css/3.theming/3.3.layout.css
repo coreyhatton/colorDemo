@@ -413,7 +413,7 @@
     display: block;
     background-color: var(--color-tertiary);
     border: none;
-    height: 1px;
+    height: 2px;
     width: 100%;
   }
 }

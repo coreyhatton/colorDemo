@@ -12,7 +12,7 @@
 
     --grid-rows: [header-start] auto [header-end content-start] 1fr [content-end footer-start] auto [footer-end];
 
-    --grid-page-gutters: max(8dvw, calc(50dvw - var(--content-size) / 2));
+    --grid-page-gutters: max(6dvw, calc(50dvw - var(--content-size) / 2));
 
     --wide-template-columns: [wide-start col-start] minmax(0, 1fr) [col-end content-start col-start]
       repeat(10, [col-start] minmax(0, 1fr) [col-end]) [content-end col-start] minmax(0, 1fr) [col-end wide-end];

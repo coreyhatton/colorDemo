@@ -47,7 +47,7 @@
     font-size: var(--fontsize-xs);
     position: absolute;
     top: 0;
-    left: calc(-1 * var(--gutter));
+    left: -1.2lh;
     z-index: -1;
 
     height: 100%;
@@ -89,6 +89,7 @@
   }
 
   .blockInfo {
+    content-visibility: hidden;
     font-size: var(--fontsize-sm);
     line-height: 1;
     color: var(--text-base);
@@ -105,17 +106,18 @@
     }
 
     &.visible {
-      animation: showInfo ease-in 350ms both;
+      animation: showInfo ease-out 450ms forwards;
     }
 
     &.hidden {
-      animation: hideInfo ease-in 350ms both;
+      animation: hideInfo ease-in 350ms forwards;
     }
   }
 }
 
 @keyframes showInfo {
   from {
+    content-visibility: hidden;
     transform: rotateX(90deg);
     translate: 0 -50%;
     block-size: 0;
@@ -124,9 +126,9 @@
     opacity: 0.2;
   }
   to {
+    content-visibility: visible;
     transform: rotateX(0deg);
     translate: 0 0;
-    opacity: 0.8;
     block-size: 1lh;
     box-sizing: content-box;
     padding-block: var(--spacing-sm);
@@ -135,6 +137,7 @@
 
 @keyframes hideInfo {
   from {
+    content-visibility: visible;
     transform: rotateX(0deg);
     translate: 0 0;
     block-size: 1lh;
@@ -142,6 +145,7 @@
     padding-block: var(--spacing-sm);
   }
   to {
+    content-visibility: hidden;
     transform: rotateX(90deg);
     translate: 0 -50%;
     opacity: 0.2;

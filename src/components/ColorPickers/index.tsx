@@ -96,7 +96,7 @@ export const ColorPickers = ({ className, ...props }: ColorPickersProps) => {
         handleRelativeChange(category);
 
         return setIsChangingColor(null);
-      }, 50),
+      }, 150),
     [handleColorChange, handleRelativeChange, setIsChangingColor]
   );
 

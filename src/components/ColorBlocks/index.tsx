@@ -1,4 +1,4 @@
-import { memo, useDeferredValue, useRef, useState } from "react";
+import { memo, useDeferredValue, useRef } from "react";
 import {
   useCalculatingState,
   useColorStates,

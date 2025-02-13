@@ -338,10 +338,8 @@
 
   /* TEXT-LEVEL SEMANTICS */
   a {
-    display: inline-flex;
-    gap: 1ch;
+    display: inline;
     color: var(--link-unvisited, LinkText);
-    text-decoration: underline;
 
     &:hover {
       text-decoration: none;

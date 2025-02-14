@@ -6,7 +6,9 @@
     min-block-size: 100dvh;
     column-gap: 0;
 
-    container: body / inline-size;
+    /* NOTE: @dev Auto-fit doesn't play nice with containment in webkit browsers 
+       @see https://bugs.webkit.org/show_bug.cgi?id=256047 */
+    /* container: body / inline-size; */
 
     --content-size: 1200px; /* NOTE: Must match with min-width specified in the below media query. */
 
@@ -15,8 +17,8 @@
     --grid-page-gutters: max(6dvw, calc(50dvw - var(--content-size) / 2));
 
     --wide-template-columns: [wide-start col-start] minmax(0, 1fr) [col-end content-start col-start]
-      repeat(10, [col-start] minmax(0, 1fr) [col-end]) [content-end col-start] minmax(0, 1fr) [col-end wide-end];
-    --content-template-columns: [wide-start content-start] repeat(10, [col-start] minmax(0, 1fr) [col-end]) [content-end
+      repeat(12, [col-start] minmax(0, 1fr) [col-end]) [content-end col-start] minmax(0, 1fr) [col-end wide-end];
+    --content-template-columns: [wide-start content-start] repeat(12, [col-start] minmax(0, 1fr) [col-end]) [content-end
       wide-end];
 
     --template-columns: var(--content-template-columns);

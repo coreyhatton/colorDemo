@@ -57,7 +57,7 @@ export interface CssCustomPropertiesObject {
    *
    * @param initialStyle - The initial style declaration or string to reset to.
    */
-  resetToInitial: (initialStyle: CSSStyleDeclaration | String) => void;
+  resetToInitial: (initialStyle: CSSStyleDeclaration | string) => void;
 }
 
 /**
@@ -159,7 +159,7 @@ export const useCssCustomProperties = (
   const getAllProperties = () => {
     // use CSSOM api where available - supported by Chromium-based browsers
     // @see https://developer.mozilla.org/en-US/docs/Web/API/Element/computedStyleMap
-    if (!!root.computedStyleMap) {
+    if (root.computedStyleMap) {
       const style = root.computedStyleMap();
 
       // Iterator helpers not currently available in Safari
@@ -174,7 +174,7 @@ export const useCssCustomProperties = (
       // return propertyObject;
 
       const styles = {};
-      if (!!style) {
+      if (style) {
         for (const [key, value] of style) {
           if (key.startsWith("--")) {
             styles[key] = value.toString();
@@ -260,7 +260,7 @@ export const useCssCustomProperties = (
   /**
    * Function to reset the root element to its initial state.
    */
-  const resetToInitial = (initialStyle: CSSStyleDeclaration | String) => {
+  const resetToInitial = (initialStyle: CSSStyleDeclaration | string) => {
     root.style.cssText = (initialStyle || "").toString();
   };
 

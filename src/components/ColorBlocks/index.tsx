@@ -57,7 +57,7 @@ export const ColorBlocks = memo(
       <section {...props} className={`${styles.main} ${className}`}>
         <InfoSwitch
           isDisabled={isChangingColor}
-          style={{ gridColumn: "1 / -1", justifySelf: "flex-end" }}
+          className={styles.infoSwitch}
           onChange={() => setIsShown(!isShown)}
         >
           Show color info?
@@ -215,16 +215,10 @@ const InfoSwitch = ({ ...props }) => {
     <label
       {...labelProps}
       style={{
-        display: "flex",
-        alignItems: "center",
-        fontSize: "var(--fontsize-xs)",
-        color: "var(--text-muted)",
-        gap: "var(--gutter-xs)",
         opacity: props.isDisabled ? 0.4 : 1,
-        lineHeight: "1",
-        paddingInlineEnd: "var(--spacing-sm)",
         ...props.style,
       }}
+      className={`${styles.infoSwitch} ${props.className || ""}`}
       title="Toggle color info block visibility"
     >
       {props.children}

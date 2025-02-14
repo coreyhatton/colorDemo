@@ -105,7 +105,7 @@ const stateReducer = (state: any, action: any) => {
           },
         },
       };
-    case "SET_ALL_COLORS":
+    case "SET_ALL_COLORS": {
       const propertyPayload = Object.keys(action.payload).map((key) => {
         return {
           [key]: {
@@ -117,6 +117,7 @@ const stateReducer = (state: any, action: any) => {
 
       const newState = Object.assign({}, ...propertyPayload);
       return { ...state, current: { ...currentState, ...newState } };
+    }
     case "RESET":
       return { ...state, current: state.__initial };
     default:

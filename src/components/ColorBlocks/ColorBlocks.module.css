@@ -3,12 +3,13 @@
 .main {
   --min-block-width: 21ch;
 
-  container: color-blocks / inline-size;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(25cqw - var(--gutter-sm)), 1fr));
   grid-auto-flow: row;
   gap: var(--gutter-sm);
   background: var(--bg-base);
+
+  z-index: 1;
 
   > * {
     text-align: center;
@@ -20,17 +21,32 @@
   }
 }
 
+.infoSwitch {
+  grid-column: 1 / -1;
+  justify-self: flex-end;
+  display: flex;
+  align-items: "center";
+  font-size: var(--fontsize-xs);
+  color: var(--text-muted);
+  gap: var(--gutter-xs);
+  line-height: 1;
+  padding-inline-end: var(--spacing-sm);
+}
+
 .colorInput {
   transition: background-color 300ms ease-out;
 }
 
-@container contents (inline-size < calc(4 * 22ch )) {
+/* Note: @dev auto-fit doesn't play nice with containment in webkit browsers.
+ * Ensure containment context is applied to parent container for auto-fit to work. 
+ * @see https://bugs.webkit.org/show_bug.cgi?id=256047 */
+@container (inline-size < calc(4 * 22ch )) {
   .main {
     grid-template-columns: repeat(2, minmax(min(100cqw, 25ch), 1fr));
   }
 }
 
-@container contents (inline-size < calc(2 * 30ch)) {
+@container (inline-size < calc(2 * 30ch)) {
   .main {
     grid-template-columns: repeat(auto-fit, minmax(min(100cqw, 21ch), 1fr));
   }
@@ -41,16 +57,25 @@
   gap: inherit;
   position: relative;
 
-  &::before {
+  /* @dev added first-of-type selector until a fix for webkit z-indexes is implemented */
+  &:first-of-type:before {
     content: "Darker  ↼ ⇀ Lighter";
-    writing-mode: sideways-lr;
     font-size: var(--fontsize-xs);
+
     position: absolute;
     top: 0;
     left: -1.2lh;
     z-index: -1;
 
     height: 100%;
+
+    writing-mode: sideways-lr;
+
+    @supports not (writing-mode: sideways-lr) {
+      /* @dev Fallback for webkit browsers that don't support sideways-lr */
+      writing-mode: vertical-lr;
+      rotate: 180deg;
+    }
   }
 }
 
